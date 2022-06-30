@@ -1,0 +1,86 @@
+service: zippysaas-v2
+useDotenv: true
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-aws-documentation
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-reqvalidator-plugin
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+
+  environment:
+    RECIPES_TABLE: Test-${self:provider.stage}-${self:service}
+    #_X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
+    INDEX_NAME: INVERSE_KEY_IDX
+    IMAGES_S3_BUCKET: ${self:provider.stage}-${self:service}
+    SIGNED_URL_EXPIRATION: 300
+
+  #tracing:
+  #  lambda: true
+  #  apiGateway: true
+
+custom:
+  serverless-offline:
+    port: 3003
+
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    stages:
+      - dev
+
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Udagram API
+        description: Serverless application for managing your own cookbook
+    models:
+      - name: CreateRecipeRequest
+        contentType: application/json
+        schema: ${file(models/create-recipe-request.json)}
+      - name: UpdateRecipeRequest
+        contentType: application/json
+        schema: ${file(models/update-recipe-request.json)}
+
+functions:
+
+  GetRecipes:
+    handler: src/lambda/http/getRecipes.handler
+    events:
+      - http:
+          method: get
+          path: recipes
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECIPES_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECIPES_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+
+resources:
+  - ${file(resources/cognito-user-pool.yml)}
+  - ${file(resources/cognito-identity-pool.yml)}
+  - ${file(resources/api-gateway-authorizer.yml)}
+  - ${file(resources/everything-else.yml)}
