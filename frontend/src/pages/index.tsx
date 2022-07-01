@@ -7,7 +7,7 @@ import {CognitoHostedUIIdentityProvider} from '@aws-amplify/auth';
 
 const axios = require('axios');
 
-const HOSTED_URL = 'https://vn0q5aj1w0.execute-api.eu-west-1.amazonaws.com/dev/';
+const HOSTED_URL = 'https://46ll6x3x9i.execute-api.eu-west-1.amazonaws.com/dev/';
 
 const Index = () => {
   const router = useRouter();

@@ -2,7 +2,7 @@ import '../styles/global.css';
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import type { AppProps } from 'next/app';
 
-const HOSTED_URL = 'https://vn0q5aj1w0.execute-api.eu-west-1.amazonaws.com/dev/';
+const HOSTED_URL = 'https://46ll6x3x9i.execute-api.eu-west-1.amazonaws.com/dev/';
 
 const config = {
   HOSTED_URL,
@@ -15,9 +15,9 @@ const config = {
   /**
    * Add the details from the Pulumi output here, after running 'pulumi up'
    */
-  USER_POOL_CLIENT_ID: '7e3jli05poglpv66o5heqpkr5o',
-  USER_POOL_ID: 'eu-west-1_Ov7l0ZwqL',
-  IDENTITY_POOL_ID: 'eu-west-1:45fb7418-8990-41ab-8148-7380c107affb',
+  USER_POOL_CLIENT_ID: '21hd3lellvhntt8jafeisu86f4',
+  USER_POOL_ID: 'eu-west-1_Ix2mFv0Vz',
+  IDENTITY_POOL_ID: 'eu-west-1:39005e1d-d314-4474-9527-1cd973d0caae',
 };
 
 const awsconfig = {
@@ -28,7 +28,7 @@ const awsconfig = {
     identityPoolId: config.IDENTITY_POOL_ID,
     userPoolWebClientId: config.USER_POOL_CLIENT_ID,
     oauth: {
-      domain: 'dev-zippysaas-v2-auth.auth.eu-west-1.amazoncognito.com',
+      domain: 'dev-zippysaas-v2.auth.eu-west-1.amazoncognito.com',
       redirectSignIn: config.REDIRECT_SIGN_IN,
       redirectSignOut: config.REDIRECT_SIGN_OUT,
       scope: ['email', 'openid', 'aws.cognito.signin.user.admin'],

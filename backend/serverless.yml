@@ -54,6 +54,14 @@ custom:
         schema: ${file(models/update-recipe-request.json)}
 
 functions:
+  preSignUp:
+    handler: src/auth/pre-signup.handler
+    events:
+      - cognitoUserPool:
+          pool: ${self:provider.stage}-user-pool
+          trigger: PreSignUp
+          existing: true
+
 
   GetRecipes:
     handler: src/lambda/http/getRecipes.handler

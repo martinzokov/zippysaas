@@ -25,12 +25,14 @@ Resources:
   CognitoUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: ${self:provider.stage}-${self:service}-auth
+      Domain: ${self:provider.stage}-${self:service}
       UserPoolId:
         Ref: CognitoUserPool
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn: 
+      - CognitoUserPoolIdentityProvider
     Properties:
       # Generate an app client name based on the stage
       ClientName: ${self:provider.stage}-user-pool-client
