@@ -10,14 +10,7 @@ const axios = require('axios');
 const HOSTED_URL = 'https://46ll6x3x9i.execute-api.eu-west-1.amazonaws.com/dev/';
 
 const Index = () => {
-  const router = useRouter();
   const [token, setToken] = useState('');
-  const [user, setUser] = useState(null);
-
-  const signin = async () =>{
-    let result = await Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google });
-    console.log(result);
-  }
 
   useEffect(() => {
     Auth.currentSession()

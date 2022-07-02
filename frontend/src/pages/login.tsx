@@ -3,9 +3,10 @@ import { Main } from '@/templates/Main';
 import {CognitoHostedUIIdentityProvider} from '@aws-amplify/auth';
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import { useState } from 'react';
-
+import { useRouter } from 'next/router';
 
 const Login = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,7 +16,8 @@ const Login = () => {
   }
   const emailSignin = async () =>{
     try {
-      const user = await Auth.signIn(email, password);
+      await Auth.signIn(email, password);
+      router.push('/');
     } catch (error) {
         console.log('error signing in', error);
     }

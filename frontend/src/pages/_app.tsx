@@ -1,3 +1,5 @@
+import {useEffect, useState} from 'react';
+import { useRouter } from 'next/router';
 import '../styles/global.css';
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import type { AppProps } from 'next/app';
@@ -41,8 +43,14 @@ const awsconfig = {
 
 Amplify.configure(awsconfig);
 
-const MyApp = ({ Component, pageProps }: AppProps) => (
-  <Component {...pageProps} />
-);
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    Auth.currentSession()
+    .catch(err => {router.push('/login')});
+  }, []);
+  return (<Component {...pageProps} />)
+};
 
 export default MyApp;
