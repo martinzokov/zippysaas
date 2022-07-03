@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-
 import { AppConfig } from '@/utils/AppConfig';
 
 type IMainProps = {
@@ -16,7 +15,7 @@ const navigation = [
 ]
 const userNavigation = [
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
+  { name: 'Sign out', href: '/signout' },
 ]
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -29,8 +28,8 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 
-const Main = (props: IMainProps) => (
-  <div className="w-full px-1 text-gray-700 antialiased">
+const Main = (props: IMainProps) => {
+  return (<div className="w-full px-1 text-gray-700 antialiased">
     {props.meta}
     
     <div className="mx-auto max-w-screen-md">
@@ -63,7 +62,7 @@ const Main = (props: IMainProps) => (
                       {/* Profile dropdown */}
                       <Menu as="div" className="ml-3 relative">
                         <div>
-                          <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                          <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none">
                             <span className="sr-only">Open user menu</span>
                             <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                               <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -120,7 +119,7 @@ const Main = (props: IMainProps) => (
                       <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-white">{user.name}</div>
+                      <div className="text-base font-medium leading-none text-gray-900">{user.name}</div>
                       <div className="text-sm font-medium leading-none text-gray-900">{user.email}</div>
                     </div>
                   </div>
@@ -164,7 +163,7 @@ const Main = (props: IMainProps) => (
          */}
       </div>
     </div>
-  </div>
-);
+  </div>)
+};
 
 export { Main };
