@@ -14,7 +14,7 @@ const navigation = [
   { name: 'About', href: '/about' },
 ]
 const userNavigation = [
-  { name: 'Settings', href: '#' },
+  { name: 'Settings', href: '/settings' },
   { name: 'Sign out', href: '/signout' },
 ]
 function classNames(...classes) {
