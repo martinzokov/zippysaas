@@ -4,6 +4,7 @@ import {CognitoHostedUIIdentityProvider} from '@aws-amplify/auth';
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Login = () => {
   const router = useRouter();
@@ -70,9 +71,9 @@ const Login = () => {
             </button>
           </div>
           <div className="flex text-center items-center">
-    
-              <a href="#" className="font-small text-sm underline text-neutral-600 hover:text-indigo-500"> Forgot your password? </a>
-    
+            <Link href="/forgotten-password">
+              <a className="font-small text-sm underline text-neutral-600 hover:text-indigo-500"> Forgot your password? </a>
+            </Link>
           </div>
     
     
