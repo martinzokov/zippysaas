@@ -3,34 +3,107 @@ import { Main } from '@/templates/Main';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Auth } from 'aws-amplify';
+import { Dialog } from '@headlessui/react'
+
+interface PasswordValidation{
+    hasUpperAndLower: Boolean;
+    hasNumber: Boolean;
+    hasSpecial: Boolean;
+    hasLength: Boolean;
+    passwordsMatch: Boolean;
+}
 
 const Settings = () => {
+    let [settingsUpdatedOpen, setSettingsUpdatedOpen] = useState(false);
+
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setnewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    
-  const handleOldPasswordChange=(e)=>{
-    setOldPassword(e.target.value)
-  }
-  
-  const handleNewPasswordChange=(e)=>{
-    setnewPassword(e.target.value)
-  }
-  
-  const handleConfirmPasswordChange=(e)=>{
-    setConfirmPassword(e.target.value)
-  }
-
-  const changePassword = async (e) =>{
-    e.preventDefault();
-    await Auth.currentAuthenticatedUser()
-    .then(user => {
-        return Auth.changePassword(user, oldPassword, newPassword);
+    const [validation, setValidation] = useState<PasswordValidation>({
+        hasUpperAndLower: false,
+        hasNumber: false,
+        hasSpecial: false,
+        hasLength: false,
+        passwordsMatch: false
     })
-    .then(data => console.log(data))
-    .catch(err => console.log(err));
-  }
+    
+    const handleOldPasswordChange=(e)=>{
+        setOldPassword(e.target.value)
+    }
+    
+    const handleNewPasswordChange=(e)=>{
+        setnewPassword(e.target.value)
+    }
+    
+    const handleConfirmPasswordChange=(e)=>{
+        setConfirmPassword(e.target.value)
+    }
+
+    const changePassword = async (e) =>{
+        e.preventDefault()
+        if (isValid()) {
+            await Auth.currentAuthenticatedUser()
+            .then(user => {
+                return Auth.changePassword(user, oldPassword, newPassword);
+            })
+            .then(data => {
+                setSettingsUpdatedOpen(true);
+                setInterval(()=>{setSettingsUpdatedOpen(false)}, 3000)
+            })
+            .catch(err => console.log(err));
+        }
+    }
+
+    useEffect(() => {
+        isValidLength(newPassword);
+        hasUpperAndLowerCaseLetter(newPassword);
+        hasNumber(newPassword);
+        hasSpecialCharacter(newPassword);
+        isValidConfirmPassword(newPassword, confirmPassword);
+    }, [newPassword, confirmPassword]);
+
+    const isValidLength = (password: string) => {
+        let hasLength = password.length >= 8
+        setValidation(validation => ({...validation, hasLength: hasLength}))
+        return hasLength;
+    }
+
+    const hasUpperAndLowerCaseLetter  = (password: string) => {
+        let hasUpperAndLower = /[a-z]/.test(password) && /[A-Z]/.test(password)
+        setValidation(validation => ({...validation, hasUpperAndLower: hasUpperAndLower}))
+        return hasUpperAndLower;
+    }
+   
+    const hasNumber = (password: string) => {
+        let hasNumber = /\d/.test(password)
+        setValidation(validation => ({...validation, hasNumber: hasNumber}))
+        return hasNumber;
+    }
+
+    const hasSpecialCharacter = (password: string) => {
+        let hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+        setValidation(validation => ({...validation, hasSpecial: hasSpecial}))
+        return hasSpecial;
+    }
+
+    const isValidConfirmPassword = (password: string, confirmPassword: string) => {
+        let passwordsMatch = password === confirmPassword;
+        setValidation(validation => ({...validation, passwordsMatch: passwordsMatch}))
+        return passwordsMatch;
+    }
+
+    const isValid = () => {
+        return validation.hasLength 
+        && validation.hasUpperAndLower 
+        && validation.hasNumber
+        && validation.hasSpecial 
+        && validation.passwordsMatch;
+    }
+
+    function closeModal() {
+        setSettingsUpdatedOpen(false)
+    }
 
   return (
     <Main
@@ -40,7 +113,29 @@ const Settings = () => {
         description="Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework."
       />
     }
-  >
+    >
+    <Dialog as="div" className="relative z-10" open={settingsUpdatedOpen} onClose={closeModal}>
+        <div className="fixed inset-0 overflow-y-auto">
+        <div className="flex h-24 mt-10 items-center justify-center p-4 text-center">
+            <Dialog.Panel className="border-2 w-full max-w-md transform overflow-hidden rounded-xl bg-white p-6 text-left align-middle transition-all">
+                <div className="mt-2 text-gray-700 text-md flex justify-between">
+                    <span>
+                        Your password has been successfully updated.
+                    </span>
+                    <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={closeModal}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </Dialog.Panel>
+        </div>
+        </div>
+    </Dialog>
     
     <form onSubmit={changePassword} className="mt-8 space-y-6" method="POST">
         <div className="flex md:flex-row flex-col p-5 content-between">
@@ -91,6 +186,15 @@ const Settings = () => {
                                 onChange={handleConfirmPasswordChange}
                                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             />
+                        </div>
+                        <div className="mx-5 my-3">
+                            <div className="text-sm flex flex-col w-48 rounded-md p-3">
+                                <span className={validation.hasLength ? "hidden" : ""}>At least 8 characters</span>
+                                <span className={validation.hasUpperAndLower ? "hidden" : ""}>Upper and lower case</span>
+                                <span className={validation.hasNumber ? "hidden" : ""}>A number</span>
+                                <span className={validation.hasSpecial ? "hidden" : ""}>Needs a special character</span>
+                                <span className={validation.passwordsMatch ? "hidden" : ""}>Passwords don't match</span>
+                            </div>
                         </div>
                     </div>
                     <div className="w-56 mt-5">
