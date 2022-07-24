@@ -206,7 +206,7 @@ const Settings = () => {
                   autoComplete="current-password"
                   required
                   onChange={handleOldPasswordChange}
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className={basicInputStyle()}
                 />
               </div>
               <div className="w-72">
@@ -223,7 +223,7 @@ const Settings = () => {
                   autoComplete="new-password"
                   required
                   onChange={handleNewPasswordChange}
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className={basicInputStyle()}
                 />
               </div>
               <div className="w-72">
@@ -240,7 +240,7 @@ const Settings = () => {
                   autoComplete="new-password"
                   required
                   onChange={handleConfirmPasswordChange}
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className={basicInputStyle()}
                 />
               </div>
               <div className="my-3">
@@ -298,10 +298,21 @@ const Settings = () => {
   );
 };
 
-function PasswordValidationRule({ text, state }) {
+function basicInputStyle(): string {
+  return "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm";
+}
+
+interface PasswordValidationRuleParams {
+  state: Boolean;
+  text: String;
+}
+
+function PasswordValidationRule(
+  params: PasswordValidationRuleParams
+): JSX.Element {
   return (
     <div className="flex">
-      <span className={state ? "" : "hidden"}>
+      <span className={params.state ? "" : "hidden"}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5 fill-lime-600"
@@ -315,7 +326,7 @@ function PasswordValidationRule({ text, state }) {
           />
         </svg>
       </span>
-      <span>{text}</span>
+      <span>{params.text}</span>
     </div>
   );
 }
