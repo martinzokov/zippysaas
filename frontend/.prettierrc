@@ -1,0 +1,6 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "html.format.wrapLineLength": 100,
+  "prettier.disableLanguages": ["html"]
+}
