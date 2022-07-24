@@ -5,6 +5,7 @@
     "next/core-web-vitals", // Needed to avoid warning in next.js build: 'The Next.js plugin was not detected in your ESLint configuration'
     "plugin:prettier/recommended"
   ],
+  "quotes": [2, "single"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -31,7 +32,7 @@
         "plugin:prettier/recommended"
       ],
       "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": "./frontend/tsconfig.json"
       },
       "rules": {
         "prettier/prettier": [
