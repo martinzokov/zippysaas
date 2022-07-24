@@ -1,46 +1,47 @@
-import Link from 'next/link';
-import type { ReactNode } from 'react';
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { AppConfig } from '@/utils/AppConfig';
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { Fragment } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { AppConfig } from "@/utils/AppConfig";
 
 type IMainProps = {
   meta: ReactNode;
   children: ReactNode;
 };
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-]
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+];
 const userNavigation = [
-  { name: 'Settings', href: '/settings' },
-  { name: 'Sign out', href: '/signout' },
-]
+  { name: "Settings", href: "/settings" },
+  { name: "Sign out", href: "/signout" },
+];
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
+  name: "Tom Cook",
+  email: "tom@example.com",
   imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+};
 
 const Main = (props: IMainProps) => {
-  return (<div className="w-full px-1 text-gray-700 antialiased">
-    {props.meta}
-    
-    <div className="mx-auto max-w-screen-md">
-      <div className="border-b border-gray-300">
-        <div className="pt-16 pb-8">
-          <div className="text-3xl font-bold text-gray-900">
-            {AppConfig.title}
+  return (
+    <div className="w-full px-1 text-gray-700 antialiased">
+      {props.meta}
+
+      <div className="mx-auto max-w-screen-md">
+        <div className="border-b border-gray-300">
+          <div className="pt-16 pb-8">
+            <div className="text-3xl font-bold text-gray-900">
+              {AppConfig.title}
+            </div>
+            <div className="text-xl">{AppConfig.description}</div>
           </div>
-          <div className="text-xl">{AppConfig.description}</div>
-        </div>
-        <Disclosure as="nav" className="">
+          <Disclosure as="nav" className="">
             <>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
@@ -50,9 +51,9 @@ const Main = (props: IMainProps) => {
                         {navigation.map((item) => (
                           <Link key={item.name} href={item.href}>
                             <a className="text-gray-900 hover:bg-gray-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            {item.name}
-                          </a>
-                        </Link>
+                              {item.name}
+                            </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -65,9 +66,20 @@ const Main = (props: IMainProps) => {
                           <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none">
                             <span className="sr-only">Open user menu</span>
                             <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                              <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                            </div>                          
-                  </Menu.Button>
+                              <svg
+                                className="absolute w-12 h-12 text-gray-400 -left-1"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                  clip-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </div>
+                          </Menu.Button>
                         </div>
                         <Transition
                           as={Fragment}
@@ -97,7 +109,7 @@ const Main = (props: IMainProps) => {
                     {/* Mobile menu button */}
                     <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                       <span className="sr-only">Open main menu</span>
-                        <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
                     </Disclosure.Button>
                   </div>
                 </div>
@@ -107,7 +119,7 @@ const Main = (props: IMainProps) => {
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                   {navigation.map((item) => (
                     <Link key={item.name} href={item.href}>
-                        <a className="block text-gray-900 hover:bg-gray-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                      <a className="block text-gray-900 hover:bg-gray-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         {item.name}
                       </a>
                     </Link>
@@ -116,11 +128,26 @@ const Main = (props: IMainProps) => {
                 <div className="pt-4 pb-3 border-t border-gray-700">
                   <div className="flex items-center px-5">
                     <div className="flex-shrink-0 relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                      <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                      <svg
+                        className="absolute w-12 h-12 text-gray-400 -left-1"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-gray-900">{user.name}</div>
-                      <div className="text-sm font-medium leading-none text-gray-900">{user.email}</div>
+                      <div className="text-base font-medium leading-none text-gray-900">
+                        {user.name}
+                      </div>
+                      <div className="text-sm font-medium leading-none text-gray-900">
+                        {user.email}
+                      </div>
                     </div>
                   </div>
                   <div className="mt-3 px-2 space-y-1">
@@ -137,33 +164,33 @@ const Main = (props: IMainProps) => {
                         <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                           {item.name}
                         </a>
-                    </Link>
+                      </Link>
                     ))}
                   </div>
                 </div>
               </Disclosure.Panel>
             </>
-          
-        </Disclosure>
-      </div>
+          </Disclosure>
+        </div>
 
-      <div className="content py-5 text-xl">{props.children}</div>
+        <div className="content py-5 text-xl">{props.children}</div>
 
-      <div className="border-t border-gray-300 py-8 text-center text-sm">
-        © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{' '}
-        <span role="img" aria-label="Love">
-          ♥
-        </span>{' '}
-        by <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>
-        {/*
-         * PLEASE READ THIS SECTION
-         * We'll really appreciate if you could have a link to our website
-         * The link doesn't need to appear on every pages, one link on one page is enough.
-         * Thank you for your support it'll mean a lot for us.
-         */}
+        <div className="border-t border-gray-300 py-8 text-center text-sm">
+          © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{" "}
+          <span role="img" aria-label="Love">
+            ♥
+          </span>{" "}
+          by <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>
+          {/*
+           * PLEASE READ THIS SECTION
+           * We'll really appreciate if you could have a link to our website
+           * The link doesn't need to appear on every pages, one link on one page is enough.
+           * Thank you for your support it'll mean a lot for us.
+           */}
+        </div>
       </div>
     </div>
-  </div>)
+  );
 };
 
 export { Main };
