@@ -30,10 +30,10 @@ const user = {
 
 const Main = (props: IMainProps) => {
   return (
-    <div className="w-full px-1 text-gray-700 antialiased">
+    <div className="w-full px-1 text-gray-700 antialiased bg-gray-100">
       {props.meta}
 
-      <div className="mx-auto max-w-screen-md">
+      <div className="mx-auto max-w-screen-md flex flex-col h-screen justify-between p-3">
         <div className="border-b border-gray-300">
           <div className="pt-16 pb-8">
             <div className="text-3xl font-bold text-gray-900">
@@ -43,7 +43,7 @@ const Main = (props: IMainProps) => {
           </div>
           <Disclosure as="nav" className="">
             <>
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto ">
                 <div className="flex items-center justify-between h-16">
                   <div className="flex items-center">
                     <div className="hidden md:block">
@@ -173,7 +173,7 @@ const Main = (props: IMainProps) => {
           </Disclosure>
         </div>
 
-        <div className="content py-5 text-xl">{props.children}</div>
+        <div className="content py-5 text-xl mb-auto">{props.children}</div>
 
         <div className="border-t border-gray-300 py-8 text-center text-sm">
           © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{" "}
