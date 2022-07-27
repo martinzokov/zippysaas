@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import Amplify, { Auth, Hub } from "aws-amplify";
 
-const Login = () => {
+const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleSignin = async () => {
@@ -131,4 +131,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

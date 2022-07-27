@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-const Login = () => {
+const Signin = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,12 +35,21 @@ const Login = () => {
   };
   return (
     //<Main meta={<Meta title="Lorem ipsum" description="Lorem ipsum" />}>
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 h-screen">
+      <div className="max-w-lg w-full space-y-8 bg-white rounded-lg shadow-xl p-10">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
+          <div className="text-md flex justify-center mt-10">
+            <span>No account yet?</span>
+            <Link href="/signup">
+              <a className="font-small text-sm underline text-neutral-600 hover:text-indigo-500 ml-1">
+                {" "}
+                Sign Up{" "}
+              </a>
+            </Link>
+          </div>
         </div>
         <div>
           <button
@@ -136,4 +145,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signin;

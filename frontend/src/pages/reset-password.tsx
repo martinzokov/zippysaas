@@ -30,7 +30,7 @@ const ForgottenPassword = () => {
     if (isValid()) {
       try {
         await Auth.forgotPasswordSubmit(email, code, password);
-        router.push("/login");
+        router.push("/signin");
       } catch (error) {
         console.log(error);
       }
