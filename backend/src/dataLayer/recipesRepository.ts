@@ -15,7 +15,7 @@ const logger = createLogger("recipeRepository");
 export class RecipesRepository {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly recipesTable = process.env.RECIPES_TABLE,
+    private readonly recipesTable = process.env.DYNAMO_TABLE,
     private readonly usrRecipeGSIndex = process.env.INDEX_NAME
   ) {}
 

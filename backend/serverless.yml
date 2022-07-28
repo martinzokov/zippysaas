@@ -17,11 +17,10 @@ provider:
   region: ${opt:region, 'eu-west-1'}
 
   environment:
-    RECIPES_TABLE: Test-${self:provider.stage}-${self:service}
-    #_X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
     INDEX_NAME: INVERSE_KEY_IDX
-    IMAGES_S3_BUCKET: ${self:provider.stage}-${self:service}
     SIGNED_URL_EXPIRATION: 300
+    #_X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
+    # DYNAMO_TABLE: Test-${self:provider.stage}-${self:service}
 
   #tracing:
   #  lambda: true
@@ -62,7 +61,6 @@ functions:
           trigger: PreSignUp
           existing: true
 
-
   GetRecipes:
     handler: src/lambda/http/getRecipes.handler
     events:
@@ -74,21 +72,21 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:GetItem
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECIPES_TABLE}
-      - Effect: Allow
-        Action:
-          - dynamodb:GetItem
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECIPES_TABLE}/index/${self:provider.environment.INDEX_NAME}
-
+    # Add permissions for storage access
+    # iamRoleStatements:
+    #   - Effect: Allow
+    #     Action:
+    #       - dynamodb:GetItem
+    #       - dynamodb:Query
+    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}
+    #   - Effect: Allow
+    #     Action:
+    #       - dynamodb:GetItem
+    #       - dynamodb:Query
+    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
   - ${file(resources/api-gateway-authorizer.yml)}
-  - ${file(resources/everything-else.yml)}
+  - ${file(resources/api-gateway.yml)}
