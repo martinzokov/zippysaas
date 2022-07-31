@@ -34,7 +34,6 @@ const Signin = () => {
     setPassword(e.target.value);
   };
   return (
-    //<Main meta={<Meta title="Lorem ipsum" description="Lorem ipsum" />}>
     <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 h-screen">
       <div className="max-w-lg w-full space-y-8 bg-white rounded-lg shadow-xl p-10">
         <div>
@@ -141,7 +140,6 @@ const Signin = () => {
         </form>
       </div>
     </div>
-    //</Main>)
   );
 };
 

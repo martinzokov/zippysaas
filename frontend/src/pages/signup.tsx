@@ -1,12 +1,13 @@
-import { Meta } from "@/layouts/Meta";
-import { Main } from "@/templates/Main";
 import { useState } from "react";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
-import Amplify, { Auth, Hub } from "aws-amplify";
+import { Auth } from "aws-amplify";
+import { useRouter } from "next/router";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
+
   const googleSignin = async () => {
     let result = await Auth.federatedSignIn({
       provider: CognitoHostedUIIdentityProvider.Google,
@@ -23,7 +24,8 @@ const Signup = () => {
           // other custom attributes
         },
       });
-      console.log("user " + user);
+
+      router.push("/");
     } catch (error) {
       console.log("error signing up:", error);
     }
@@ -37,12 +39,11 @@ const Signup = () => {
     setPassword(e.target.value);
   };
   return (
-    //<Main meta={<Meta title="Lorem ipsum" description="Lorem ipsum" />}>
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 h-screen">
+      <div className="max-w-lg w-full space-y-8 bg-white rounded-lg shadow-xl p-10">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Sign up
           </h2>
         </div>
         <div>
@@ -127,7 +128,6 @@ const Signup = () => {
         </form>
       </div>
     </div>
-    //</Main>)
   );
 };
 
