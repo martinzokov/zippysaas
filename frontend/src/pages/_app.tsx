@@ -5,7 +5,7 @@ import Amplify, { Auth, Hub } from "aws-amplify";
 import type { AppProps } from "next/app";
 
 const HOSTED_URL =
-  "https://46ll6x3x9i.execute-api.eu-west-1.amazonaws.com/dev/";
+  "https://0x28ytfal3.execute-api.eu-west-1.amazonaws.com/dev/";
 
 const config = {
   HOSTED_URL,
@@ -18,9 +18,9 @@ const config = {
   /**
    * Add the details from the Pulumi output here, after running 'pulumi up'
    */
-  USER_POOL_CLIENT_ID: "21hd3lellvhntt8jafeisu86f4",
-  USER_POOL_ID: "eu-west-1_Ix2mFv0Vz",
-  IDENTITY_POOL_ID: "eu-west-1:39005e1d-d314-4474-9527-1cd973d0caae",
+  USER_POOL_CLIENT_ID: "u096ktjef3i0k1adrfpr6ae54",
+  USER_POOL_ID: "eu-west-1_XHPzSasen",
+  IDENTITY_POOL_ID: "eu-west-1:286462aa-5149-49e8-b9d0-7719e827a7aa",
 };
 
 const awsconfig = {

@@ -1,4 +1,4 @@
-service: zippysaas-v2
+service: zippysaas
 useDotenv: true
 
 plugins:
