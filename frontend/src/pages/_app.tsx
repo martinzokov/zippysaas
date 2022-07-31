@@ -31,7 +31,7 @@ const awsconfig = {
     identityPoolId: config.IDENTITY_POOL_ID,
     userPoolWebClientId: config.USER_POOL_CLIENT_ID,
     oauth: {
-      domain: "dev-zippysaas-v2.auth.eu-west-1.amazoncognito.com",
+      domain: "dev-zippysaas.auth.eu-west-1.amazoncognito.com",
       redirectSignIn: config.REDIRECT_SIGN_IN,
       redirectSignOut: config.REDIRECT_SIGN_OUT,
       scope: ["email", "openid", "aws.cognito.signin.user.admin"],

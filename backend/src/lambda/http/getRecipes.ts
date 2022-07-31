@@ -6,7 +6,7 @@ import {
   APIGatewayProxyHandler,
 } from "aws-lambda";
 
-import { getUserId } from "../utils";
+
 import { createLogger } from "../../utils/logger";
 const logger = createLogger("getRecipes");
 
