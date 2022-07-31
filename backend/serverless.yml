@@ -54,12 +54,12 @@ functions:
           trigger: PreSignUp
           existing: true
 
-  GetRecipes:
-    handler: src/lambda/http/getRecipes.handler
+  GetExample:
+    handler: src/lambda/http/getExample.handler
     events:
       - http:
           method: get
-          path: recipes
+          path: example
           cors: true
           authorizer:
             type: COGNITO_USER_POOLS

@@ -24,7 +24,7 @@ const Index = () => {
 
   useEffect(() => {
     axios
-      .get(`${HOSTED_URL}recipes`, {
+      .get(`${HOSTED_URL}example`, {
         headers: { Authorization: `Bearer ${token}` },
         "Content-Type": "application/json",
       })

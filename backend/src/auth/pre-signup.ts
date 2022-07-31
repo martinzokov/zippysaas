@@ -7,7 +7,7 @@ import {
 
 import { createLogger } from "../utils/logger";
 
-const logger = createLogger("updateRecipe");
+const logger = createLogger("preSignUp");
 
 export const handler: PreSignUpTriggerHandler = async (
   event: PreSignUpTriggerEvent
@@ -28,6 +28,6 @@ export const handler: PreSignUpTriggerHandler = async (
 
     return event;
   } catch (error) {
-    logger.error(`error during recipe update ${error}`);
+    logger.error(`error during pre-signup ${error}`);
   }
 };

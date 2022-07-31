@@ -8,7 +8,7 @@ import {
 
 
 import { createLogger } from "../../utils/logger";
-const logger = createLogger("getRecipes");
+const logger = createLogger("getExample");
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
@@ -25,6 +25,6 @@ export const handler: APIGatewayProxyHandler = async (
       }),
     };
   } catch (error) {
-    logger.error(`error during recipe fetch ${error}`);
+    logger.error(`error during example fetch ${error}`);
   }
 };
