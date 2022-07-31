@@ -42,15 +42,8 @@ custom:
     api:
       info:
         version: v1.0.0
-        title: Udagram API
-        description: Serverless application for managing your own cookbook
-    models:
-      - name: CreateRecipeRequest
-        contentType: application/json
-        schema: ${file(models/create-recipe-request.json)}
-      - name: UpdateRecipeRequest
-        contentType: application/json
-        schema: ${file(models/update-recipe-request.json)}
+        title: ZippySaaS
+        description: ZippySaaS helps you build SaaS fast
 
 functions:
   preSignUp:

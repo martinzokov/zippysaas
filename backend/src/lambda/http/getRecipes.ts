@@ -6,7 +6,6 @@ import {
   APIGatewayProxyHandler,
 } from "aws-lambda";
 
-import { getRecipes } from "../../businessLayer/recipesActions";
 import { getUserId } from "../utils";
 import { createLogger } from "../../utils/logger";
 const logger = createLogger("getRecipes");
@@ -15,9 +14,6 @@ export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    //const userId = getUserId(event);
-    const items = {"str": "hello"} ;
-
     return {
       statusCode: 200,
       headers: {
@@ -25,7 +21,7 @@ export const handler: APIGatewayProxyHandler = async (
         "Access-Control-Allow-Credentials": true,
       },
       body: JSON.stringify({
-        items,
+        message: "Hello, ZippySaaS!"
       }),
     };
   } catch (error) {
