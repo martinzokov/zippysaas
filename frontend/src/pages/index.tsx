@@ -6,7 +6,7 @@ import { Auth } from "aws-amplify";
 const axios = require("axios");
 
 const HOSTED_URL =
-  "https://0x28ytfal3.execute-api.eu-west-1.amazonaws.com/dev/";
+  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
 
 const Index = () => {
   const [token, setToken] = useState("");

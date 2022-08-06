@@ -1,12 +1,13 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { AppConfig } from "@/utils/AppConfig";
 
 import logo from "../../public/assets/images/zippy-logo.png";
-console.log(logo);
+import { Auth } from "aws-amplify";
+
 type IMainProps = {
   meta: ReactNode;
   children: ReactNode;
@@ -19,18 +20,37 @@ const userNavigation = [
   { name: "Settings", href: "/settings" },
   { name: "Sign out", href: "/signout" },
 ];
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+
+function isEmailLogin(attributes: CognitoUserAttribute[]): boolean {
+  return (
+    attributes.filter((attribute) => attribute.Name === "email").length > 0
+  );
 }
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-
 const Main = (props: IMainProps) => {
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    Auth.currentUserPoolUser()
+      .then((user) => {
+        Auth.userAttributes(user)
+          .then((attributes) => {
+            if (isEmailLogin(attributes)) {
+              let email =
+                attributes.filter((attribute) => attribute.Name === "email")[0]
+                  ?.Value ?? "";
+              setUserEmail(email);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="w-full px-1 text-gray-700 antialiased bg-gray-100">
       {props.meta}
@@ -146,11 +166,8 @@ const Main = (props: IMainProps) => {
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-gray-900">
-                        {user.name}
-                      </div>
                       <div className="text-sm font-medium leading-none text-gray-900">
-                        {user.email}
+                        {userEmail}
                       </div>
                     </div>
                   </div>
