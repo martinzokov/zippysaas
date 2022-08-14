@@ -65,6 +65,35 @@ functions:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
+  CreateCheckoutSession:
+    handler: src/lambda/http/createCheckoutSession.handler
+    events:
+      - http:
+          method: post
+          path: create-checkout-session
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  CreatePortalSession:
+    handler: src/lambda/http/createPortalSession.handler
+    events:
+      - http:
+          method: post
+          path: create-portal-session
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  StripeWebhook:
+    handler: src/lambda/http/stripeWebhook.handler
+    events:
+      - http:
+          method: post
+          path: stripe-webhook
+          cors: true
     # Add permissions for storage access
     # iamRoleStatements:
     #   - Effect: Allow
