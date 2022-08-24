@@ -8,10 +8,13 @@ import {
 
 
 import { createLogger } from "../../utils/logger";
+import { WebhooksRepository } from "../../storage/WebhooksRepository";
+import { StripeWebhookEvent } from "../../storage/StripeWebhookEvent";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
 
+const whRepo = new WebhooksRepository();
 
 export const handler: APIGatewayProxyHandler = async (
   stripeEvent: APIGatewayProxyEvent
@@ -48,6 +51,7 @@ export const handler: APIGatewayProxyHandler = async (
   let subscription;
   let status;
   let constructedEvent = event as any;
+  await whRepo.saveWebhook(new StripeWebhookEvent(constructedEvent.id, stripeEvent.body));
   // Handle the event
   switch (constructedEvent.type) {
     case 'customer.subscription.trial_will_end':

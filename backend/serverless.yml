@@ -96,20 +96,23 @@ functions:
           path: stripe-webhook
           cors: true
     # Add permissions for storage access
-    # iamRoleStatements:
-    #   - Effect: Allow
-    #     Action:
-    #       - dynamodb:GetItem
-    #       - dynamodb:Query
-    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}
-    #   - Effect: Allow
-    #     Action:
-    #       - dynamodb:GetItem
-    #       - dynamodb:Query
-    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}/index/${self:provider.environment.INDEX_NAME}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
   - ${file(resources/api-gateway-authorizer.yml)}
   - ${file(resources/api-gateway.yml)}
+  - ${file(resources/storage.yml)}
