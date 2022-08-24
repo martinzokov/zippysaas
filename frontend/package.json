@@ -12,7 +12,7 @@
     "lint": "next lint",
     "check-types": "tsc --noEmit --pretty",
     "test": "jest --watch",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install frontend/.husky"
   },
   "dependencies": {
     "@headlessui/react": "^1.6.5",
