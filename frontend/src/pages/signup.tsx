@@ -1,12 +1,16 @@
-import { Meta } from "@/layouts/Meta";
-import { Main } from "@/templates/Main";
 import { useState } from "react";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
-import Amplify, { Auth, Hub } from "aws-amplify";
+import { Auth } from "aws-amplify";
+import { useRouter } from "next/router";
+
+import googleLogo from "../../public/assets/images/g-signin.svg";
+import Link from "next/link";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
+
   const googleSignin = async () => {
     let result = await Auth.federatedSignIn({
       provider: CognitoHostedUIIdentityProvider.Google,
@@ -23,7 +27,8 @@ const Signup = () => {
           // other custom attributes
         },
       });
-      console.log("user " + user);
+
+      router.push("/");
     } catch (error) {
       console.log("error signing up:", error);
     }
@@ -37,13 +42,21 @@ const Signup = () => {
     setPassword(e.target.value);
   };
   return (
-    //<Main meta={<Meta title="Lorem ipsum" description="Lorem ipsum" />}>
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 h-screen">
+      <div className="max-w-lg w-full space-y-8 bg-white rounded-lg shadow-xl p-10">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Sign up
           </h2>
+          <div className="text-md flex justify-center mt-10">
+            <span>Already have an account?</span>
+            <Link href="/signin">
+              <a className="font-small text-sm underline text-neutral-600 hover:text-indigo-500 ml-1">
+                {" "}
+                Sign In{" "}
+              </a>
+            </Link>
+          </div>
         </div>
         <div>
           <button
@@ -52,10 +65,7 @@ const Signup = () => {
             role="button"
             className="py-2 px-4 border rounded-lg border-gray-400 hover:border-gray-500 flex items-center w-full mt-10"
           >
-            <img
-              src="https://tuk-cdn.s3.amazonaws.com/can-uploader/sign_in-svg2.svg"
-              alt="google"
-            />
+            <img src={googleLogo.src} alt="google" />
             <p className="text-base font-medium ml-4 text-gray-700">
               Continue with Google
             </p>
@@ -80,7 +90,7 @@ const Signup = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-main focus:border-main focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
             </div>
@@ -95,7 +105,7 @@ const Signup = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-main focus:border-main focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
             </div>
@@ -104,30 +114,14 @@ const Signup = () => {
             <button
               onClick={emailSignup}
               type="button"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-main hover:bg-main focus:outline-none focus:ring-2 focus:ring-offset-2"
             >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <svg
-                  className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </span>
               Sign up
             </button>
           </div>
         </form>
       </div>
     </div>
-    //</Main>)
   );
 };
 

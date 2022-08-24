@@ -37,6 +37,11 @@ module.exports = {
           800: '#2c5282',
           900: '#2a4365',
         },
+        main: {
+          DEFAULT: '#9f6fa7',
+          light: '#9f6fa7',
+          dark: '#47314a',
+        }
       },
     },
   },

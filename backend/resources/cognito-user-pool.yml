@@ -18,9 +18,11 @@ Resources:
       UserPoolId:
         Ref: CognitoUserPool
       ProviderDetails:
-          client_id: ${env:GOOGLE_CLIENT_ID}
-          client_secret: ${env:GOOGLE_CLIENT_SECRET}
-          authorize_scopes: profile
+        client_id: ${env:GOOGLE_CLIENT_ID}
+        client_secret: ${env:GOOGLE_CLIENT_SECRET}
+        authorize_scopes: "profile email openid"
+      AttributeMapping:
+        email: "email"
 
   CognitoUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
@@ -31,7 +33,7 @@ Resources:
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
-    DependsOn: 
+    DependsOn:
       - CognitoUserPoolIdentityProvider
     Properties:
       # Generate an app client name based on the stage
@@ -45,10 +47,10 @@ Resources:
       SupportedIdentityProviders:
         - Google
       AllowedOAuthScopes:
-        - 'profile'
-        - 'email'
-        - 'openid'
-        - 'aws.cognito.signin.user.admin'
+        - "profile"
+        - "email"
+        - "openid"
+        - "aws.cognito.signin.user.admin"
       AllowedOAuthFlows:
         - code
       LogoutURLs:
@@ -65,11 +67,11 @@ Outputs:
   UserPoolClientId:
     Value:
       Ref: CognitoUserPoolClient
-  
+
   CognitoUserPoolDomain:
     Value:
       Ref: CognitoUserPoolDomain
-  
+
   CognitoUserPoolIdentityProvider:
     Value:
       Ref: CognitoUserPoolIdentityProvider
