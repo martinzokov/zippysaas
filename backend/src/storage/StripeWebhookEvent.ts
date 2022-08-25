@@ -1,12 +1,12 @@
 export class StripeWebhookEvent {
     id: string;
     body: any;
-    status: WebhookProcessingStatus;
+    processing_status: WebhookProcessingStatus;
 
     constructor(eventId: string, event: any){
         this.id = eventId;
         this.body = event;
-        this.status = WebhookProcessingStatus.PENDING;
+        this.processing_status = WebhookProcessingStatus.PENDING;
     }
 }
 

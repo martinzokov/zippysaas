@@ -59,13 +59,6 @@ async function newStripeWebhookEvent(eventBody: any) {
     let subscription;
     let status;
     switch (event.type) {
-        case 'customer.subscription.trial_will_end':
-          subscription = event.data.object;
-          status = subscription.status;
-          console.log(`Subscription status is ${status}.`);
-          // Then define and call a method to handle the subscription trial ending.
-          // handleSubscriptionTrialEnding(subscription);
-          break;
         case 'customer.subscription.deleted':
           subscription = event.data.object;
           status = subscription.status;
