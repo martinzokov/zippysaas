@@ -10,3 +10,8 @@ export function parseUserId(jwtToken: string): string {
   const decodedJwt = decode(jwtToken) as JwtPayload;
   return decodedJwt.sub;
 }
+
+export function parseUserEmail(jwtToken: string): string {
+  const decodedJwt = decode(jwtToken) as JwtPayload;
+  return decodedJwt.email;
+}

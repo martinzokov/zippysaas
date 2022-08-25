@@ -8,6 +8,7 @@ import {
 
 
 import { createLogger } from "../../utils/logger";
+import { parseUserEmail } from "../../auth/utils";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
@@ -16,6 +17,7 @@ const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5O
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+    const userEmail = parseUserEmail(event.headers['Authorization'].split(' ')[1]);
 
     const prices = await stripe.prices.list({
         lookup_keys: [event.queryStringParameters.lookup_key],
@@ -35,6 +37,7 @@ export const handler: APIGatewayProxyHandler = async (
     mode: 'subscription',
     success_url: "http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "http://localhost:3000/?canceled=true",
+    customer_email: userEmail
     });
     
 

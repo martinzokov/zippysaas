@@ -109,6 +109,12 @@ functions:
           - dynamodb:PutItem
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+  ProcessWebhook:
+    handler: src/lambda/events/dynamoEvents.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt PaymentsDynamoDBTable.StreamArn
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}

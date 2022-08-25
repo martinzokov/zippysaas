@@ -3,7 +3,7 @@ import * as AWSXRay from "aws-xray-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createLogger } from "../utils/logger";
 import * as uuid from "uuid";
-import { StripeWebhookEvent } from "./StripeWebhookEvent";
+import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 
 const XAWS = AWSXRay.captureAWS(AWS);
 const logger = createLogger("webhooksRepository");
@@ -37,6 +37,31 @@ export class WebhooksRepository{
   
       return event.id;
   } 
+
+  async setWebhookStatus(eventId: string, status: WebhookProcessingStatus) {
+    logger.info("Storing webhook");
+    try{
+      const updated = await this.docClient
+      .update({
+        TableName: this.webhooksTable,
+        Key: {
+          partitionKey: WEBHOOK_PK,
+          sortKey: eventId,
+        },
+        UpdateExpression:
+          "set status = :status",
+        ExpressionAttributeValues: {
+          ":name": status,
+        },
+        ReturnValues: "UPDATED_NEW",
+      })
+      .promise();
+    } catch(e){
+      logger.error("error saving webhook: ", e)
+    }
+    
+    return eventId;
+} 
 }
 
 function createDynamoDBClient() {

@@ -48,44 +48,10 @@ export const handler: APIGatewayProxyHandler = async (
       }
     }
   }
-  let subscription;
-  let status;
   let constructedEvent = event as any;
   await whRepo.saveWebhook(new StripeWebhookEvent(constructedEvent.id, stripeEvent.body));
   // Handle the event
-  switch (constructedEvent.type) {
-    case 'customer.subscription.trial_will_end':
-      subscription = constructedEvent.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription trial ending.
-      // handleSubscriptionTrialEnding(subscription);
-      break;
-    case 'customer.subscription.deleted':
-      subscription = constructedEvent.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription deleted.
-      // handleSubscriptionDeleted(subscriptionDeleted);
-      break;
-    case 'customer.subscription.created':
-      subscription = constructedEvent.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription created.
-      // handleSubscriptionCreated(subscription);
-      break;
-    case 'customer.subscription.updated':
-      subscription = constructedEvent.data.object;
-      status = subscription.status;
-      console.log(`Subscription status is ${status}.`);
-      // Then define and call a method to handle the subscription update.
-      // handleSubscriptionUpdated(subscription);
-      break;
-    default:
-      // Unexpected event type
-      console.log(`Unhandled event type ${constructedEvent.type}.`);
-  }
+  
   // Return a 200 response to acknowledge receipt of the event
   return{
     statusCode: 200,
