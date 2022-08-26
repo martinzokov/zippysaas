@@ -2,22 +2,26 @@ import { createLogger } from "../utils/logger";
 
 import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 import { AbstractRepository } from "./AbstractRepository";
+import { USER_PREFIX } from "./prefixes";
 
 const logger = createLogger("subscriptionsRepository");
 
 export class SubscriptionsRepository extends AbstractRepository{
   tableName: string = process.env.PAYMENTS_TABLE;
+  index: string = process.env.INDEX_NAME;
   
   constructor() {
     super();
   }
 
-  async saveCustomer(event: StripeWebhookEvent) {
+  async saveCognitoUser(cognitoId: string) {
       logger.info("Storing webhook");
       
-      this.save(null, null, null);
+      const key = USER_PREFIX + cognitoId;
+
+      await this.save(key, key, {});
   
-      return event.id;
+      return key;
   } 
 
   async setWebhookStatus(eventId: string, status: WebhookProcessingStatus) {

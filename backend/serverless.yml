@@ -55,6 +55,23 @@ functions:
           trigger: PreSignUp
           existing: true
 
+  postConfirmation:
+    handler: src/auth/post-confirmation.handler
+    events:
+      - cognitoUserPool:
+          pool: ${self:provider.stage}-user-pool
+          trigger: PostConfirmation
+          existing: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
   GetExample:
     handler: src/lambda/http/getExample.handler
     events:
