@@ -12,6 +12,7 @@ const WEBHOOK_PK = "WEBHOOK";
 
 export class WebhooksRepository extends AbstractRepository{
   tableName: string = process.env.PAYMENTS_TABLE;
+  index: string = process.env.INDEX_NAME;
 
   constructor(
   ) {
@@ -21,13 +22,24 @@ export class WebhooksRepository extends AbstractRepository{
   async saveWebhook(event: StripeWebhookEvent) {
       logger.info("Storing webhook");
       try{
-        await this.save(WEBHOOK_PK, event.id, event);
+        await this.save(WEBHOOK_PK, event.idempotencyKey, event);
       } catch(e){
         logger.error("error saving webhook: ", e)
       }
       
-      return event.id;
+      return event.idempotencyKey;
   } 
+
+  async findWebhookByIdempotencyKey(idempotencyKey: string) {
+    logger.info("Storing webhook");
+    try{
+      return await this.queryBySortKey(idempotencyKey);
+    } catch(e){
+      logger.error("error saving webhook: ", e)
+    }
+    
+    return [];
+} 
 
   async setWebhookStatus(eventId: string, processing_status: WebhookProcessingStatus) {
     logger.info("Storing webhook");

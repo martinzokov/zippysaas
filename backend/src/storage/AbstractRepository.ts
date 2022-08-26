@@ -1,6 +1,6 @@
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk";
-import { DocumentClient, ExpressionAttributeValueMap, UpdateExpression } from "aws-sdk/clients/dynamodb";
+import { DocumentClient, ExpressionAttributeValueMap, ItemList, UpdateExpression } from "aws-sdk/clients/dynamodb";
 import { createLogger } from "../utils/logger";
 import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 
@@ -10,6 +10,7 @@ const logger = createLogger("repository");
 
 export abstract class AbstractRepository{
   abstract tableName: string;
+  abstract index: string;
 
   constructor(
       private readonly docClient: DocumentClient = createDynamoDBClient(),
@@ -33,7 +34,30 @@ export abstract class AbstractRepository{
       }
       
       return partitionKey;
-  } 
+  }
+
+  async queryBySortKey(sortKeyValue: string) {
+    logger.info("Storing webhook");
+    let items: ItemList = [];
+    try{
+      const result = await this.docClient
+      .query({
+        TableName: this.tableName,
+        KeyConditionExpression: "sortKey = :sortKeyValue",
+        IndexName: this.index,
+        ExpressionAttributeValues: {
+          ":sortKeyValue": sortKeyValue,
+        },
+      })
+      .promise();
+
+      items = result.Items;
+    } catch(e){
+      logger.error("error fetching object: ", e)
+    }
+    
+    return items;
+} 
 
   async update(parittionKey: string, sortKey: string, updateExpression: UpdateExpression, expressionAttributesValues: ExpressionAttributeValueMap ) {
     logger.info("Storing webhook");
@@ -51,7 +75,7 @@ export abstract class AbstractRepository{
       })
       .promise();
     } catch(e){
-      logger.error("error saving webhook: ", e)
+      logger.error("error updating object: ", e)
     }
     
     return parittionKey;

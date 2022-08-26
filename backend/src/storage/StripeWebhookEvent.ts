@@ -1,10 +1,10 @@
 export class StripeWebhookEvent {
-    id: string;
+    idempotencyKey: string;
     body: any;
     processing_status: WebhookProcessingStatus;
 
-    constructor(eventId: string, event: any){
-        this.id = eventId;
+    constructor(idempotencyKey: string, event: any){
+        this.idempotencyKey = idempotencyKey;
         this.body = event;
         this.processing_status = WebhookProcessingStatus.PENDING;
     }

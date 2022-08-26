@@ -8,7 +8,7 @@ import {
 
 
 import { createLogger } from "../../utils/logger";
-import { parseUserEmail } from "../../auth/utils";
+import { parseUserEmail, parseUserId } from "../../auth/utils";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
@@ -17,7 +17,9 @@ const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5O
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-    const userEmail = parseUserEmail(event.headers['Authorization'].split(' ')[1]);
+    const jwt = event.headers['Authorization'].split(' ')[1];
+    const userEmail = parseUserEmail(jwt);
+    const userId = parseUserId(jwt);
 
     const prices = await stripe.prices.list({
         lookup_keys: [event.queryStringParameters.lookup_key],
@@ -25,19 +27,22 @@ export const handler: APIGatewayProxyHandler = async (
       });
     console.log("prices from stripe: "+ JSON.stringify(prices))
     const session = await stripe.checkout.sessions.create({
-    billing_address_collection: 'auto',
-    line_items: [
-        {
-        price: prices.data[0].id,
-        // For metered billing, do not pass quantity
-        quantity: 1,
+      billing_address_collection: 'auto',
+      line_items: [
+          {
+          price: prices.data[0].id,
+          // For metered billing, do not pass quantity
+          quantity: 1,
 
-        },
-    ],
-    mode: 'subscription',
-    success_url: "http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:3000/?canceled=true",
-    customer_email: userEmail
+          },
+      ],
+      mode: 'subscription',
+      success_url: "http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "http://localhost:3000/?canceled=true",
+      customer_email: userEmail,
+      metadata: {
+        internalUserId: userId
+      }
     });
     
 
