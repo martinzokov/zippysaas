@@ -22,12 +22,12 @@ export class WebhooksRepository extends AbstractRepository{
   async saveWebhook(event: StripeWebhookEvent) {
       logger.info("Storing webhook");
       try{
-        await this.save(WEBHOOK_PK, event.idempotencyKey, event);
+        await this.save(WEBHOOK_PK, event.id, event);
       } catch(e){
         logger.error("error saving webhook: ", e)
       }
       
-      return event.idempotencyKey;
+      return event.id;
   } 
 
   async findWebhookByIdempotencyKey(idempotencyKey: string) {

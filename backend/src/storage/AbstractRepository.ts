@@ -62,7 +62,7 @@ export abstract class AbstractRepository{
   async update(parittionKey: string, sortKey: string, updateExpression: UpdateExpression, expressionAttributesValues: ExpressionAttributeValueMap ) {
     logger.info("Storing webhook");
     try{
-      const updated = await this.docClient
+      await this.docClient
       .update({
         TableName: this.tableName,
         Key: {

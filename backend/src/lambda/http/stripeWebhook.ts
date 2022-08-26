@@ -49,10 +49,10 @@ export const handler: APIGatewayProxyHandler = async (
     }
   }
   let constructedEvent = event as any;
-  const idempotencyKey = constructedEvent.request.idempotency_key
-  const recordsWithKey = await whRepo.findWebhookByIdempotencyKey(idempotencyKey)
+  const eventId = constructedEvent.id
+  const recordsWithKey = await whRepo.findWebhookByIdempotencyKey(eventId)
   if(recordsWithKey.length == 0){
-    await whRepo.saveWebhook(new StripeWebhookEvent(idempotencyKey, stripeEvent.body));
+    await whRepo.saveWebhook(new StripeWebhookEvent(eventId, stripeEvent.body));
   }
   // Handle the event
   
