@@ -9,9 +9,10 @@ import {
 
 import { createLogger } from "../../utils/logger";
 import { parseUserEmail, parseUserId } from "../../auth/utils";
+import Stripe from "stripe";
 const logger = createLogger("getExample");
 
-const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
+const stripe: Stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
 
 
 export const handler: APIGatewayProxyHandler = async (
@@ -20,6 +21,25 @@ export const handler: APIGatewayProxyHandler = async (
     const jwt = event.headers['Authorization'].split(' ')[1];
     const userEmail = parseUserEmail(jwt);
     const userId = parseUserId(jwt);
+
+    const customersResult: Stripe.Response<Stripe.ApiList<Stripe.Customer>> = await stripe.customers.list({email: userEmail})
+
+    let customer: Stripe.Customer;
+    if(customersResult.data.length === 0){
+      logger.warn('no customer record found, creating Stripe customer');
+      const customerCreateResponse: Stripe.Response<Stripe.Customer> = await stripe.customers.create({
+        email: userEmail,
+        metadata: {
+          internalUserId: userId
+        }
+      });
+
+      customer = customerCreateResponse
+    } else{
+      customer = customersResult.data[0];
+    }
+    
+    //console.log(existingCustomer.);
 
     const prices = await stripe.prices.list({
         lookup_keys: [event.queryStringParameters.lookup_key],
@@ -39,9 +59,13 @@ export const handler: APIGatewayProxyHandler = async (
       mode: 'subscription',
       success_url: "http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:3000/?canceled=true",
-      customer_email: userEmail,
-      metadata: {
-        internalUserId: userId
+      //customer_email: userEmail,
+      customer: customer.id,
+      client_reference_id: userId,
+      subscription_data: {
+        metadata: {
+          internalUserId: userId
+        }
       }
     });
     

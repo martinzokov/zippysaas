@@ -55,6 +55,7 @@ export abstract class AbstractRepository{
     } catch(e){
       logger.error("error fetching object: ", e)
     }
+    logger.info("items found: ", items);
     
     return items;
 } 

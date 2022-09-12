@@ -5,9 +5,13 @@ import { WebhookProcessingStatus } from "../../storage/StripeWebhookEvent";
 import { WebhooksRepository } from "../../storage/WebhooksRepository";
 
 import { createLogger } from "../../utils/logger";
+import { CustomerEventsProcessor } from "./processors/CustomerEventsProcessor";
+import { InvoiceEventsProcessor } from "./processors/InvoiceEventsProcessor";
 
 const logger = createLogger("webhookProcessor");
 const whRepo = new WebhooksRepository();
+const invoiceProcessor = new InvoiceEventsProcessor();
+const customerProcessor = new CustomerEventsProcessor();
 
 
 export const handler: DynamoDBStreamHandler = async (
@@ -58,7 +62,27 @@ async function newStripeWebhookEvent(eventBody: any) {
 
     let subscription;
     let status;
+    if(event.type.startsWith('invoice')){
+      await invoiceProcessor.process(event);
+    }else if(event.type.startsWith('customer')){
+      await customerProcessor.process(event);
+    }
     switch (event.type) {
+        case 'customer.created':
+
+        break;
+        case 'customer.updated':
+          
+        break;
+        case 'customer.subscription.created':
+          
+        break;
+        case 'customer.subscription.updated':
+          
+        break;
+
+
+
         case 'customer.subscription.deleted':
           subscription = event.data.object;
           status = subscription.status;

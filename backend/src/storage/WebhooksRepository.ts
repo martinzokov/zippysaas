@@ -39,7 +39,7 @@ export class WebhooksRepository extends AbstractRepository{
     }
     
     return [];
-} 
+  } 
 
   async setWebhookStatus(eventId: string, processing_status: WebhookProcessingStatus) {
     logger.info("Storing webhook");
