@@ -58,4 +58,17 @@ export class StripeConfigRepository extends AbstractRepository{
     return partitionKey;
   }
 
+  async findProduct(productId: string): Promise<StripeProduct>{
+    const key = productId;
+    const result = await this.queryByKeys(key, key);
+    let productResult: StripeProduct;
+    if(result.Items && result.Items.length === 1){
+      productResult = (result.Items[0] as any) as StripeProduct;
+    } else{
+      logger.error("product not found");
+    }
+
+    return productResult;
+  }
+
 }

@@ -1,4 +1,5 @@
 export class StripeSubscription {
+    sortKey: string;
     body: any;
     expiresAt: number;
 

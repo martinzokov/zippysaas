@@ -1,6 +1,6 @@
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk";
-import { DocumentClient, ExpressionAttributeValueMap, ItemList, QueryOutput, UpdateExpression } from "aws-sdk/clients/dynamodb";
+import { DocumentClient, ExpressionAttributeValueMap, ItemList, QueryOutput, UpdateExpression, AttributeValue } from "aws-sdk/clients/dynamodb";
 import { createLogger } from "../utils/logger";
 import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 
@@ -122,16 +122,37 @@ async queryByPartitionKey(partitionKey: string) {
     
     return result;
   } 
+
+  async queryByKeys(partitionKey: string, sortKey: string ) {
+    logger.info("Querying db for keys: "+partitionKey+", "+sortKey);
+    let result: QueryOutput;
+    try{
+      result = await this.docClient
+      .query({
+        TableName: this.tableName,
+        KeyConditionExpression: "partitionKey = :partitionKeyValue and sortKey = :sortKeyValue",
+        ExpressionAttributeValues: {
+          ":partitionKeyValue": partitionKey as AttributeValue,
+          ":sortKeyValue": sortKey as AttributeValue
+        },
+      })
+      .promise();
+    } catch(e){
+      logger.error("error updating object: ", e)
+    }
+    
+    return result;
+  }
 }
 
 
 function createDynamoDBClient() {
-    if (process.env.IS_OFFLINE) {
-      console.log("Creating a local DynamoDB instance");
-      return new XAWS.DynamoDB.DocumentClient({
-        region: "localhost",
-        endpoint: "http://localhost:8000",
-      });
-    }
+    // if (process.env.IS_OFFLINE) {
+    //   console.log("Creating a local DynamoDB instance");
+    //   return new XAWS.DynamoDB.DocumentClient({
+    //     region: "localhost",
+    //     endpoint: "http://localhost:8000",
+    //   });
+    // }
     return new XAWS.DynamoDB.DocumentClient();
   }

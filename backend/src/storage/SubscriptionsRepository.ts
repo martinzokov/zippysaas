@@ -3,10 +3,11 @@ import { createLogger } from "../utils/logger";
 import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 import { AttributeValue, DocumentClient } from "aws-sdk/clients/dynamodb";
 import { AbstractRepository } from "./AbstractRepository";
-import { USER_PREFIX } from "./prefixes";
+import { FEATURE_PREFIX, USER_PREFIX } from "./prefixes";
 import { StripeSubscription } from "./StripeSubscription";
 import * as DynamoDB from "aws-sdk/clients/dynamodb";
 import { StripeCustomer } from "./StripeCustomer";
+import { Feature } from "./models/Feature";
 
 const logger = createLogger("subscriptionsRepository");
 
@@ -124,21 +125,44 @@ export class SubscriptionsRepository extends AbstractRepository{
     }
   }
 
-  async getCustomerDetails(cognitoUserId: string, sortKeyPrefix: string): Promise<StripeSubscription> {
+  async getCustomerSubscription(cognitoUserId: string): Promise<StripeSubscription> {
+    let stripeSubscriptionResult: StripeSubscription;
     try{
       const customerKey = USER_PREFIX + cognitoUserId;
       let result: DynamoDB.QueryOutput = await this.query("partitionKey = :partitionKey and begins_with(sortKey, :prefix) ", {
         ":partitionKey": customerKey as AttributeValue,
-        ":prefix": sortKeyPrefix as AttributeValue
+        ":prefix": "sub_" as AttributeValue
       });
-      logger.info(result);
-      let test = result as StripeSubscription;
-      logger.info("subscription expires: ", new Date(test.expiresAt));
+      if(result.Count === 1){
+        // cannot directly cast to StripeSubscription
+        let resultAsAny = result.Items[0] as any;
+        stripeSubscriptionResult = resultAsAny as StripeSubscription;
+      } else{
+        throw new Error("More than one subscription found");
+      }
 
     } catch(e){
       logger.error("error getting subscription: ", e)
     }
     
-    return null;
-  } 
+    return stripeSubscriptionResult;
+  }
+
+  async getProductFeatures(productId: string): Promise<Feature[]>{
+    let featuresResult: Feature[] = [];
+    try{
+      let result: DynamoDB.QueryOutput = await this.query("partitionKey = :partitionKey and begins_with(sortKey, :prefix) ", {
+        ":partitionKey": productId as AttributeValue,
+        ":prefix": FEATURE_PREFIX as AttributeValue
+      });
+
+      let resultsAsAny = result.Items as any[];
+      featuresResult = resultsAsAny as Feature[];
+
+    } catch(e){
+      logger.error("error getting subscription: ", e)
+    }
+
+    return featuresResult;
+  }
 }

@@ -21,9 +21,8 @@ provider:
   environment:
     INDEX_NAME: INVERSE_KEY_IDX
     SIGNED_URL_EXPIRATION: 300
-    #_X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
+    _X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
     PAYMENTS_TABLE: payments-${self:service}-${self:provider.stage}
-
 
   #tracing:
   #  lambda: true
@@ -31,7 +30,7 @@ provider:
 
 custom:
   serverless-offline:
-    port: 3003
+    httpPort: 4000
 
   dynamodb:
     start:
@@ -74,22 +73,7 @@ functions:
           - dynamodb:PutItem
           - dynamodb:GetItem
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}     
-  custInfoTest:
-    handler: src/lambda/admin/custInfoTest.handler
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:PutItem
-          - dynamodb:GetItem
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
-      - Effect: Allow
-        Action:
-          - dynamodb:PutItem
-          - dynamodb:GetItem
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}     
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
   preSignUp:
     handler: src/auth/pre-signup.handler
@@ -114,6 +98,31 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+  GetSubscriptionDetails:
+    handler: src/lambda/http/getSubscriptionDetails.handler
+    events:
+      - http:
+          method: get
+          path: subscription-details
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
   GetExample:
