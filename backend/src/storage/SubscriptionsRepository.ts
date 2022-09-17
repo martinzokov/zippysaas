@@ -123,4 +123,22 @@ export class SubscriptionsRepository extends AbstractRepository{
       this.saveCustomer(cognitoUserId,  customerId, customer);
     }
   }
+
+  async getCustomerDetails(cognitoUserId: string, sortKeyPrefix: string): Promise<StripeSubscription> {
+    try{
+      const customerKey = USER_PREFIX + cognitoUserId;
+      let result: DynamoDB.QueryOutput = await this.query("partitionKey = :partitionKey and begins_with(sortKey, :prefix) ", {
+        ":partitionKey": customerKey as AttributeValue,
+        ":prefix": sortKeyPrefix as AttributeValue
+      });
+      logger.info(result);
+      let test = result as StripeSubscription;
+      logger.info("subscription expires: ", new Date(test.expiresAt));
+
+    } catch(e){
+      logger.error("error getting subscription: ", e)
+    }
+    
+    return null;
+  } 
 }

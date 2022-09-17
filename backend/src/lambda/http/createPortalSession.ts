@@ -8,10 +8,11 @@ import {
 
 
 import { createLogger } from "../../utils/logger";
+import { StripeConfigRepository } from "../../storage/StripeConfigRepository";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
-
+const stripeConfigRepo = new StripeConfigRepository();
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
@@ -29,9 +30,12 @@ export const handler: APIGatewayProxyHandler = async (
     // managing their billing with the portal.
     const returnUrl = "http://localhost:3000";
 
+    const portalConfigId: string = await stripeConfigRepo.findBillingPortalConfiguration();
+
     const portalSession = await stripe.billingPortal.sessions.create({
-    customer: checkoutSession.customer,
-    return_url: returnUrl,
+      configuration: portalConfigId,
+      customer: checkoutSession.customer,
+      return_url: returnUrl,
     });
 
     return {

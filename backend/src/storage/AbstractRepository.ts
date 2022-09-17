@@ -1,6 +1,6 @@
 import * as AWS from "aws-sdk";
 import * as AWSXRay from "aws-xray-sdk";
-import { DocumentClient, ExpressionAttributeValueMap, ItemList, UpdateExpression } from "aws-sdk/clients/dynamodb";
+import { DocumentClient, ExpressionAttributeValueMap, ItemList, QueryOutput, UpdateExpression } from "aws-sdk/clients/dynamodb";
 import { createLogger } from "../utils/logger";
 import { StripeWebhookEvent, WebhookProcessingStatus } from "./StripeWebhookEvent";
 
@@ -60,6 +60,29 @@ export abstract class AbstractRepository{
     return items;
 } 
 
+async queryByPartitionKey(partitionKey: string) {
+  logger.info("Querying for partition key");
+  let items: ItemList = [];
+  try{
+    const result = await this.docClient
+    .query({
+      TableName: this.tableName,
+      KeyConditionExpression: "partitionKey = :partitionKey",
+      ExpressionAttributeValues: {
+        ":partitionKey": partitionKey,
+      },
+    })
+    .promise();
+
+    items = result.Items;
+  } catch(e){
+    logger.error("error fetching object: ", e)
+  }
+  logger.info("items found: ", items);
+  
+  return items;
+} 
+
   async update(parittionKey: string, sortKey: string, updateExpression: UpdateExpression, expressionAttributesValues: ExpressionAttributeValueMap ) {
     logger.info("Storing webhook");
     try{
@@ -81,7 +104,26 @@ export abstract class AbstractRepository{
     
     return parittionKey;
   } 
+
+  async query(keyConditionExpression: UpdateExpression, expressionAttributesValues: ExpressionAttributeValueMap ) {
+    logger.info("Querying db, key condition: ", keyConditionExpression, expressionAttributesValues);
+    let result: QueryOutput;
+    try{
+      result = await this.docClient
+      .query({
+        TableName: this.tableName,
+        KeyConditionExpression: keyConditionExpression,
+        ExpressionAttributeValues: expressionAttributesValues,
+      })
+      .promise();
+    } catch(e){
+      logger.error("error updating object: ", e)
+    }
+    
+    return result;
+  } 
 }
+
 
 function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {

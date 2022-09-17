@@ -18,6 +18,7 @@ const stripe: Stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTX
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+    const origin = event.headers['origin'];
     const jwt = event.headers['Authorization'].split(' ')[1];
     const userEmail = parseUserEmail(jwt);
     const userId = parseUserId(jwt);
@@ -57,8 +58,8 @@ export const handler: APIGatewayProxyHandler = async (
           },
       ],
       mode: 'subscription',
-      success_url: "http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:3000/?canceled=true",
+      success_url: origin + "/?success=true&session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: origin + "/?canceled=true",
       //customer_email: userEmail,
       customer: customer.id,
       client_reference_id: userId,
