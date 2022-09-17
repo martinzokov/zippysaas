@@ -106,7 +106,7 @@ async queryByPartitionKey(partitionKey: string) {
   } 
 
   async query(keyConditionExpression: UpdateExpression, expressionAttributesValues: ExpressionAttributeValueMap ) {
-    logger.info("Querying db, key condition: ", keyConditionExpression, expressionAttributesValues);
+    logger.info("Querying db, key condition: " + keyConditionExpression + ", values:" + expressionAttributesValues);
     let result: QueryOutput;
     try{
       result = await this.docClient
