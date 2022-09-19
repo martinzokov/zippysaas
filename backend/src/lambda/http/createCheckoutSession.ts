@@ -72,13 +72,12 @@ export const handler: APIGatewayProxyHandler = async (
     
 
     return {
-    statusCode: 303,
-    headers: {
-        "Location": session.url,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-    },
-    body: ""
+      statusCode: 200,
+      headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({"sessionUrl": session.url})
     }
 //   try {
 //     return {

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Meta } from "@/layouts/Meta";
 import { Main } from "@/templates/Main";
 import { Auth } from "aws-amplify";
+import { debug } from "console";
 
-const axios = require("axios");
+import axios from "axios";
 
 const HOSTED_URL =
   "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
@@ -56,16 +57,20 @@ const Index = () => {
   ) => {
     e.preventDefault();
     console.log("Creating session... token: " + token);
-    await axios
+    const response = await axios
       .post(
         `${HOSTED_URL}create-checkout-session?lookup_key=ZB1`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
-          "Content-Type": "application/json",
         }
       )
-      .then((response) => console.log(response.data.message));
+      .catch((response) => {
+        console.error(response);
+      })
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      });
   };
 
   const createPortalSessionSubmit = async (
@@ -81,7 +86,12 @@ const Index = () => {
           "Content-Type": "application/json",
         }
       )
-      .then((response) => console.log(response.data.message));
+      .catch((response) => {
+        console.error(response);
+      })
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      });
   };
 
   // if (!success && message === "") {
