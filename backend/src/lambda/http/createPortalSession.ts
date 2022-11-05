@@ -9,33 +9,29 @@ import {
 
 import { createLogger } from "../../utils/logger";
 import { StripeConfigRepository } from "../../storage/StripeConfigRepository";
+import { parseUserId } from "../../auth/utils";
+import { SubscriptionsRepository } from "../../storage/SubscriptionsRepository";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
 const stripeConfigRepo = new StripeConfigRepository();
+const subscriptionRepo = new SubscriptionsRepository();
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+    const jwt = event.headers['Authorization'].split(' ')[1];
+    const userId = parseUserId(jwt);
+    const origin = event.headers['origin'];
 
-    // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
-    // Typically this is stored alongside the authenticated user in your database.
-    //const eventBody = event.body.session_id as any;
-    //console.log(JSON.stringify(eventBody))
-    const session_id  = event.queryStringParameters.session_id;
-    console.log("session_id is: "+ session_id)
-    const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
-
-    // This is the url to which the customer will be redirected when they are done
-    // managing their billing with the portal.
-    const returnUrl = "http://localhost:3000";
+    const stripeCustomerId = await subscriptionRepo.getStripeCustomerId(userId);
 
     const portalConfigId: string = await stripeConfigRepo.findBillingPortalConfiguration();
 
     const portalSession = await stripe.billingPortal.sessions.create({
       configuration: portalConfigId,
-      customer: checkoutSession.customer,
-      return_url: returnUrl,
+      customer: stripeCustomerId,
+      return_url: origin,
     });
 
     return {

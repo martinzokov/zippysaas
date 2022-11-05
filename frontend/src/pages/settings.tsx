@@ -10,6 +10,10 @@ import {
 
 import { Meta } from "@/layouts/Meta";
 import { Main } from "@/templates/Main";
+import axios from "axios";
+
+const HOSTED_URL =
+  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
 
 interface PasswordValidation {
   hasUpperAndLower: Boolean;
@@ -20,6 +24,36 @@ interface PasswordValidation {
 }
 
 const Settings = () => {
+  const [token, setToken] = useState("");
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [subscriptionPlan, setSubscriptionPlan] = useState(false);
+
+  useEffect(() => {
+    Auth.currentSession()
+      .then((result) => {
+        setToken(result.getIdToken().getJwtToken());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (token.length > 0) {
+      axios
+        .get(`${HOSTED_URL}subscription-details`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setHasActiveSubscription(response.data.isActive);
+          setSubscriptionPlan(response.data.subscriptionPlan);
+        })
+        .catch((response) => {
+          console.error(response);
+        });
+    }
+  }, [token]);
+
   let [settingsUpdatedOpen, setSettingsUpdatedOpen] = useState(false);
   let [shouldDisplayChangePassword, setShouldDisplayChangePassword] =
     useState(false);
@@ -144,6 +178,25 @@ const Settings = () => {
     setSettingsUpdatedOpen(false);
   }
 
+  const createPortalSessionSubmit = async (
+    e: React.MouseEventHandler<HTMLInputElement>
+  ) => {
+    await axios
+      .post(
+        `${HOSTED_URL}create-portal-session`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      })
+      .catch((response) => {
+        console.error(response);
+      });
+  };
+
   return (
     <Main
       meta={
@@ -187,6 +240,30 @@ const Settings = () => {
           </div>
         </div>
       </Dialog>
+
+      <div className="flex md:flex-row flex-col p-5 content-between">
+        <div className="w-full md:w-56">
+          <h3 className="text-lg font-medium leading-6 text-gray-900">
+            Manage subscription
+          </h3>
+        </div>
+        {hasActiveSubscription ? (
+          <>
+            <div className="text-sm">Current Plan: {subscriptionPlan}</div>
+            <div className="w-56 mt-5">
+              <button
+                onClick={createPortalSessionSubmit}
+                type="button"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-main hover:bg-main-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Manage subscription
+              </button>
+            </div>{" "}
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
 
       <div className="flex md:flex-row flex-col p-5 content-between">
         <div className="w-full md:w-56">

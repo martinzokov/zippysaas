@@ -133,6 +133,10 @@ export class SubscriptionsRepository extends AbstractRepository{
         ":partitionKey": customerKey as AttributeValue,
         ":prefix": "sub_" as AttributeValue
       });
+      logger.info("result count "+ result)
+      for (let res in result.Items){
+        logger.info(res)
+      }
       if(result.Count === 1){
         // cannot directly cast to StripeSubscription
         let resultAsAny = result.Items[0] as any;
@@ -143,6 +147,34 @@ export class SubscriptionsRepository extends AbstractRepository{
 
     } catch(e){
       logger.error("error getting subscription: ", e)
+    }
+    
+    return stripeSubscriptionResult;
+  }
+
+  async getStripeCustomerId(cognitoUserId: string): Promise<string> {
+    let stripeSubscriptionResult: string;
+    try{
+      const customerKey = USER_PREFIX + cognitoUserId;
+      let result: DynamoDB.QueryOutput = await this.query("partitionKey = :partitionKey and begins_with(sortKey, :prefix) ", {
+        ":partitionKey": customerKey as AttributeValue,
+        ":prefix": "cus_" as AttributeValue
+      });
+      logger.info("customer key: " + customerKey)
+      logger.info("result count "+ result.Count)
+      for (let res in result.Items){
+        logger.info(res)
+      }
+      if(result.Count === 1){
+        // cannot directly cast to StripeSubscription
+        let resultAsAny = result.Items[0] as any;
+        stripeSubscriptionResult = (resultAsAny as StripeSubscription).sortKey;
+      } else{
+        throw new Error("More than one stripe customer found");
+      }
+
+    } catch(e){
+      logger.error("error getting customer: ", e)
     }
     
     return stripeSubscriptionResult;
