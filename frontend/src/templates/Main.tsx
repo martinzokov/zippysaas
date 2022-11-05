@@ -54,7 +54,7 @@ const Main = (props: IMainProps) => {
   return (
     <div className="w-full px-1 text-gray-700 antialiased bg-gray-100">
       {props.meta}
-      <div className="mx-auto max-w-screen-md flex flex-col h-screen justify-between p-3">
+      <div className="mx-auto md:w-4/6 max-w-full flex flex-col h-screen justify-between p-3 ">
         <div className="border-b border-gray-300">
           <div className="pt-16 pb-8">
             <div className="text-3xl font-bold text-gray-900 flex flex-row items-center">
@@ -67,7 +67,7 @@ const Main = (props: IMainProps) => {
           </div>
           <Disclosure as="nav" className="">
             <>
-              <div className="max-w-7xl mx-auto ">
+              <div className="mx-auto ">
                 <div className="flex items-center justify-between h-16">
                   <div className="flex items-center">
                     <div className="hidden md:block">

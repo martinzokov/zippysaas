@@ -5,6 +5,7 @@ import { Auth } from "aws-amplify";
 import { debug } from "console";
 
 import axios from "axios";
+import PriceSelection from "@/components/pricing/PriceSelection";
 
 const HOSTED_URL =
   "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
@@ -113,26 +114,27 @@ const Index = () => {
     >
       {!success && message === "" && (
         // <ProductDisplay formAction={createChecokutSessionSubmit} />
-        <section>
-          <div className="product">
-            <Logo />
-            <div className="description">
-              <h3>Starter plan</h3>
-              <h5>$9.99 / month</h5>
-            </div>
-          </div>
-          <form onSubmit={createChecokutSessionSubmit}>
-            {/* Add a hidden field with the lookup_key of your Price */}
-            <input type="hidden" name="lookup_key" value="ZB1" />
-            <button
-              className="bg-main text-white rounded-md p-3"
-              id="checkout-and-portal-button"
-              type="submit"
-            >
-              Checkout
-            </button>
-          </form>
-        </section>
+        <PriceSelection />
+        // <section>
+        //   <div className="product">
+        //     <Logo />
+        //     <div className="description">
+        //       <h3>Starter plan</h3>
+        //       <h5>$9.99 / month</h5>
+        //     </div>
+        //   </div>
+        //   <form onSubmit={createChecokutSessionSubmit}>
+        //     {/* Add a hidden field with the lookup_key of your Price */}
+        //     <input type="hidden" name="lookup_key" value="ZB1" />
+        //     <button
+        //       className="bg-main text-white rounded-md p-3"
+        //       id="checkout-and-portal-button"
+        //       type="submit"
+        //     >
+        //       Checkout
+        //     </button>
+        //   </form>
+        // </section>
       )}{" "}
       {success && sessionId !== "" && (
         <section>
