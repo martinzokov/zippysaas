@@ -36,21 +36,21 @@ const PriceSelection = () => {
           </Switch>
           Annual
         </div>
-        <div className="space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0">
+        <div className="flex md:flex-row flex-col">
           <PriceCard
             planName="Basic"
             features={featureList}
-            perMonth={29}
-            annual={200}
+            perMonth={9.99}
+            annual={99.9}
             isAnnualPrice={isAnnual}
             annualPriceId="price_1M1yaoJDqfS8yHgvv3f8gdOK"
             monthlyPriceId="price_1LTqXTJDqfS8yHgvelQopp3C"
           />
           <PriceCard
-            planName="Starter"
+            planName="Pro"
             features={featureList}
-            perMonth={99}
-            annual={1000}
+            perMonth={19.99}
+            annual={199}
             isAnnualPrice={isAnnual}
             annualPriceId="price_1M1ybFJDqfS8yHgvcYiIUQFx"
             monthlyPriceId="price_1LTpnqJDqfS8yHgvMBMOwZWX"
