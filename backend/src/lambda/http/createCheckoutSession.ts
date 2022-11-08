@@ -40,18 +40,11 @@ export const handler: APIGatewayProxyHandler = async (
       customer = customersResult.data[0];
     }
     
-    //console.log(existingCustomer.);
-
-    const prices = await stripe.prices.list({
-        lookup_keys: [event.queryStringParameters.lookup_key],
-        expand: ['data.product'],
-      });
-    console.log("prices from stripe: "+ JSON.stringify(prices))
     const session = await stripe.checkout.sessions.create({
       billing_address_collection: 'auto',
       line_items: [
           {
-          price: prices.data[0].id,
+          price: event.queryStringParameters.price,
           // For metered billing, do not pass quantity
           quantity: 1,
 

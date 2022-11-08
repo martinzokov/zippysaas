@@ -1,31 +1,88 @@
+import { Auth } from "aws-amplify";
+import axios from "axios";
+import { MouseEventHandler, useEffect, useState } from "react";
+
 type IPriceCardProps = {
   planName: string;
   perMonth: number;
+  monthlyPriceId: string;
   annual: number;
+  annualPriceId: string;
   features: string[];
+  isAnnualPrice: boolean;
 };
 
-const PriceCard = (props: IPriceCardProps) => (
-  <div className="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow ">
-    <h3 className="mb-4 text-2xl font-semibold">{props.planName}</h3>
-    <div className="flex justify-center items-baseline my-8">
-      <span className="mr-2 text-5xl font-extrabold">${props.perMonth}</span>
-      <span className="text-gray-500">/month</span>
+const HOSTED_URL =
+  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
+
+const PriceCard = (props: IPriceCardProps) => {
+  const [token, setToken] = useState("");
+  useEffect(() => {
+    Auth.currentSession()
+      .then((result) => {
+        setToken(result.getIdToken().getJwtToken());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const createChecokutSessionSubmit = async (
+    e: MouseEventHandler<HTMLAnchorElement>
+  ) => {
+    console.log("Creating session... token: " + token);
+    let priceId = props.isAnnualPrice
+      ? props.annualPriceId
+      : props.monthlyPriceId;
+    const response = await axios
+      .post(
+        `${HOSTED_URL}create-checkout-session?price=${priceId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .catch((response) => {
+        console.error(response);
+      })
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      });
+  };
+
+  return (
+    <div className="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow ">
+      <h3 className="mb-4 text-2xl font-semibold">{props.planName}</h3>
+      {props.isAnnualPrice ? (
+        <div className="flex justify-center items-baseline my-8">
+          <span className="mr-2 text-5xl font-extrabold">${props.annual}</span>
+          <span className="text-gray-500">/year</span>
+        </div>
+      ) : (
+        <div className="flex justify-center items-baseline my-8">
+          <span className="mr-2 text-5xl font-extrabold">
+            ${props.perMonth}
+          </span>
+          <span className="text-gray-500">/month</span>
+        </div>
+      )}
+
+      {/* <!-- List --> */}
+      <ul role="list" className="mb-8 space-y-4 text-left">
+        {props.features.map((feature, index) => (
+          <FeatureItem key={index} featureDescription={feature} />
+        ))}
+      </ul>
+      <a
+        onClick={createChecokutSessionSubmit}
+        href="#"
+        className="text-white bg-main hover:main-light focus:ring-4 focus:main-light font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+      >
+        Get started
+      </a>
     </div>
-    {/* <!-- List --> */}
-    <ul role="list" className="mb-8 space-y-4 text-left">
-      {props.features.map((feature, index) => (
-        <FeatureItem key={index} featureDescription={feature} />
-      ))}
-    </ul>
-    <a
-      href="#"
-      className="text-white bg-main hover:main-light focus:ring-4 focus:main-light font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    >
-      Get started
-    </a>
-  </div>
-);
+  );
+};
 
 const FeatureItem = ({
   featureDescription,
