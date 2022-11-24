@@ -1,5 +1,5 @@
+import { createCheckoutSession } from "@/client/BackendClient";
 import { Auth } from "aws-amplify";
-import axios from "axios";
 import { MouseEventHandler, useEffect, useState } from "react";
 
 type IPriceCardProps = {
@@ -12,42 +12,16 @@ type IPriceCardProps = {
   isAnnualPrice: boolean;
 };
 
-const HOSTED_URL =
-  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
-
 const PriceCard = (props: IPriceCardProps) => {
-  const [token, setToken] = useState("");
-  useEffect(() => {
-    Auth.currentSession()
-      .then((result) => {
-        setToken(result.getIdToken().getJwtToken());
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
   const createChecokutSessionSubmit = async (
     e: MouseEventHandler<HTMLAnchorElement>
   ) => {
-    console.log("Creating session... token: " + token);
     let priceId = props.isAnnualPrice
       ? props.annualPriceId
       : props.monthlyPriceId;
-    const response = await axios
-      .post(
-        `${HOSTED_URL}create-checkout-session?price=${priceId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .catch((response) => {
-        console.error(response);
-      })
-      .then((response: any) => {
-        window.location.href = response.data.sessionUrl;
-      });
+    await createCheckoutSession(priceId).then((response: any) => {
+      window.location.href = response.data.sessionUrl;
+    });
   };
 
   return (
@@ -97,9 +71,9 @@ const FeatureItem = ({
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
       ></path>
     </svg>
     <span>{featureDescription}</span>

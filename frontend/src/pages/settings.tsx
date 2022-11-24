@@ -11,11 +11,11 @@ import {
 
 import { Meta } from "@/layouts/Meta";
 import { Main } from "@/templates/Main";
-import axios from "axios";
 import PriceSelection from "@/components/pricing/PriceSelection";
-
-const HOSTED_URL =
-  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
+import {
+  createPortalSession,
+  getSubscriptionDetails,
+} from "@/client/BackendClient";
 
 interface PasswordValidation {
   hasUpperAndLower: Boolean;
@@ -42,10 +42,7 @@ const Settings = () => {
 
   useEffect(() => {
     if (token.length > 0) {
-      axios
-        .get(`${HOSTED_URL}subscription-details`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      getSubscriptionDetails()
         .then((response) => {
           setHasActiveSubscription(response.data.isActive);
           setSubscriptionPlan(response.data.subscriptionPlan);
@@ -185,20 +182,9 @@ const Settings = () => {
   const createPortalSessionSubmit = async (
     e: React.MouseEventHandler<HTMLInputElement>
   ) => {
-    await axios
-      .post(
-        `${HOSTED_URL}create-portal-session`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then((response: any) => {
-        window.location.href = response.data.sessionUrl;
-      })
-      .catch((response) => {
-        console.error(response);
-      });
+    await createPortalSession().catch((response) => {
+      console.error(response);
+    });
   };
 
   return (

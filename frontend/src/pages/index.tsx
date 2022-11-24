@@ -4,15 +4,10 @@ import { Main } from "@/templates/Main";
 import { Auth } from "aws-amplify";
 import { debug } from "console";
 
-import axios from "axios";
 import PriceSelection from "@/components/pricing/PriceSelection";
-
-const HOSTED_URL =
-  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
 
 const Index = () => {
   const [token, setToken] = useState("");
-  const [serverMessage, setServerMessage] = useState("");
 
   useEffect(() => {
     Auth.currentSession()
@@ -24,14 +19,6 @@ const Index = () => {
       });
   }, []);
 
-  useEffect(() => {
-    axios
-      .get(`${HOSTED_URL}example`, {
-        headers: { Authorization: `Bearer ${token}` },
-        "Content-Type": "application/json",
-      })
-      .then((response) => setServerMessage(response.data.message));
-  }, [token]);
   let [message, setMessage] = useState("");
   let [success, setSuccess] = useState(false);
   let [sessionId, setSessionId] = useState("");
@@ -52,48 +39,6 @@ const Index = () => {
       );
     }
   }, [sessionId]);
-
-  const createChecokutSessionSubmit = async (
-    e: React.FormEvent<HTMLInputElement>
-  ) => {
-    e.preventDefault();
-    console.log("Creating session... token: " + token);
-    const response = await axios
-      .post(
-        `${HOSTED_URL}create-checkout-session?lookup_key=ZB1`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .catch((response) => {
-        console.error(response);
-      })
-      .then((response: any) => {
-        window.location.href = response.data.sessionUrl;
-      });
-  };
-
-  const createPortalSessionSubmit = async (
-    e: React.FormEvent<HTMLInputElement>
-  ) => {
-    e.preventDefault();
-    await axios
-      .post(
-        `${HOSTED_URL}create-portal-session?session_id=${sessionId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          "Content-Type": "application/json",
-        }
-      )
-      .catch((response) => {
-        console.error(response);
-      })
-      .then((response: any) => {
-        window.location.href = response.data.sessionUrl;
-      });
-  };
 
   // if (!success && message === "") {
   //   return <ProductDisplay />;
@@ -144,17 +89,6 @@ const Index = () => {
               <h3>Subscription to starter plan successful!</h3>
             </div>
           </div>
-          <form onSubmit={createPortalSessionSubmit}>
-            <input
-              type="hidden"
-              id="session-id"
-              name="session_id"
-              value={sessionId}
-            />
-            <button id="checkout-and-portal-button" type="submit">
-              Manage your billing information
-            </button>
-          </form>
         </section>
       )}{" "}
       {!success && message !== "" && <Message message={message} />}
