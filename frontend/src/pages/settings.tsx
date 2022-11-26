@@ -16,6 +16,7 @@ import {
   createPortalSession,
   getSubscriptionDetails,
 } from "@/client/BackendClient";
+import { useIsAuthenticated } from "@/hooks/useIsAuthenticated";
 
 interface PasswordValidation {
   hasUpperAndLower: Boolean;
@@ -26,22 +27,12 @@ interface PasswordValidation {
 }
 
 const Settings = () => {
-  const [token, setToken] = useState("");
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [subscriptionPlan, setSubscriptionPlan] = useState(false);
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    Auth.currentSession()
-      .then((result) => {
-        setToken(result.getIdToken().getJwtToken());
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (token.length > 0) {
+    if (isAuthenticated) {
       getSubscriptionDetails()
         .then((response) => {
           setHasActiveSubscription(response.data.isActive);
@@ -51,7 +42,7 @@ const Settings = () => {
           console.error(response);
         });
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   let [settingsUpdatedOpen, setSettingsUpdatedOpen] = useState(false);
   let [planSelectionOpen, setPlanSelectionOpen] = useState(false);
@@ -286,7 +277,7 @@ const Settings = () => {
           </h3>
         </div>
         {hasActiveSubscription ? (
-          <>
+          <div className="flex flex-col">
             <div className="text-sm">Current Plan: {subscriptionPlan}</div>
             <div className="w-56 mt-5">
               <button
@@ -297,7 +288,7 @@ const Settings = () => {
                 Manage subscription
               </button>
             </div>{" "}
-          </>
+          </div>
         ) : (
           <>
             {" "}
