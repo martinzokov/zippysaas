@@ -16,7 +16,7 @@ import { Feature } from "../../storage/models/Feature";
 import { SubscriptionDetailsResponse } from "./models/SubscriptionDetailsResponse";
 import { StripeProduct } from "../../storage/models/StripeProduct";
 import { StripeConfigRepository } from "../../storage/StripeConfigRepository";
-const logger = createLogger("subscriptionDetails");
+const logger = createLogger("subscriptionDetailsHandler");
 const subscriptionsRepository = new SubscriptionsRepository();
 const stripeRepository = new StripeConfigRepository();
 

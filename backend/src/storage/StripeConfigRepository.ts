@@ -12,7 +12,7 @@ import { StripeProduct } from "./models/StripeProduct";
 import { Feature } from "./models/Feature";
 import ShortUniqueId from "short-unique-id";
 
-const logger = createLogger("subscriptionsRepository");
+const logger = createLogger("stripeConfigRepository");
 const uid = new ShortUniqueId({ length: 6 });
 
 export class StripeConfigRepository extends AbstractRepository{

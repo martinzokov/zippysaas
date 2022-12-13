@@ -10,7 +10,7 @@ import {
 import { createLogger } from "../../utils/logger";
 import { parseUserEmail, parseUserId } from "../../auth/utils";
 import Stripe from "stripe";
-const logger = createLogger("getExample");
+const logger = createLogger("checkoutHandler");
 
 const stripe: Stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
 
@@ -51,9 +51,8 @@ export const handler: APIGatewayProxyHandler = async (
           },
       ],
       mode: 'subscription',
-      success_url: origin + "/?success=true&session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: origin + "/?canceled=true",
-      //customer_email: userEmail,
+      success_url: origin + "/",
+      cancel_url: origin + "/",
       customer: customer.id,
       client_reference_id: userId,
       subscription_data: {
@@ -72,18 +71,4 @@ export const handler: APIGatewayProxyHandler = async (
       },
       body: JSON.stringify({"sessionUrl": session.url})
     }
-//   try {
-//     return {
-//       statusCode: 200,
-//       headers: {
-//         "Access-Control-Allow-Origin": "*",
-//         "Access-Control-Allow-Credentials": true,
-//       },
-//       body: JSON.stringify({
-//         message: "Hello, ZippySaaS!"
-//       }),
-//     };
-//   } catch (error) {
-//     logger.error(`error during example fetch ${error}`);
-//   }
 };

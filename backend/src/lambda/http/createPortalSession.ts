@@ -11,7 +11,7 @@ import { createLogger } from "../../utils/logger";
 import { StripeConfigRepository } from "../../storage/StripeConfigRepository";
 import { parseUserId } from "../../auth/utils";
 import { SubscriptionsRepository } from "../../storage/SubscriptionsRepository";
-const logger = createLogger("getExample");
+const logger = createLogger("createPortalHandler");
 
 const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
 const stripeConfigRepo = new StripeConfigRepository();

@@ -1,9 +1,9 @@
 import { Auth } from "aws-amplify";
 import axios from "axios";
+import { getHost } from "./environmentConfig";
 
 
-const HOSTED_URL =
-  "https://ldf0f54op8.execute-api.eu-west-1.amazonaws.com/dev/";
+const HOSTED_URL = getHost();
 
 axios.interceptors.request.use(async function (config) {
     const token = await getToken()
