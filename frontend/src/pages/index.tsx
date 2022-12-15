@@ -20,7 +20,7 @@ const Index = () => {
           setIsLoading(false);
         })
         .catch((response) => {
-          setIsLoading(true);
+          setIsLoading(false);
           console.error(response);
         });
     }

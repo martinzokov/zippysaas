@@ -173,9 +173,13 @@ const Settings = () => {
   const createPortalSessionSubmit = async (
     e: React.MouseEventHandler<HTMLInputElement>
   ) => {
-    await createPortalSession().catch((response) => {
-      console.error(response);
-    });
+    await createPortalSession()
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      })
+      .catch((response) => {
+        console.error(response);
+      });
   };
 
   return (
