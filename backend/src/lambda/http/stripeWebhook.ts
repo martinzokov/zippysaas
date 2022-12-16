@@ -12,7 +12,7 @@ import { WebhooksRepository } from "../../storage/WebhooksRepository";
 import { StripeWebhookEvent } from "../../storage/StripeWebhookEvent";
 const logger = createLogger("getExample");
 
-const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
 
 const whRepo = new WebhooksRepository();
 

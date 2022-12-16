@@ -7,7 +7,7 @@ import { SubscriptionsRepository } from "../../../storage/SubscriptionsRepositor
 import { createLogger } from "../../../utils/logger";
 import { EventsProcessor } from "./EventsProcessor";
 
-const stripe: Stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
+const stripe: Stripe = require('stripe')(process.env.STRIPE_API_KEY);
 const logger = createLogger("InvoiceProcessor");
 const subscriptionsRepository = new SubscriptionsRepository();
 

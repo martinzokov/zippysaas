@@ -12,7 +12,7 @@ import { parseUserEmail, parseUserId } from "../../auth/utils";
 import Stripe from "stripe";
 const logger = createLogger("checkoutHandler");
 
-const stripe: Stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
+const stripe: Stripe = require('stripe')(process.env.STRIPE_API_KEY);
 
 
 export const handler: APIGatewayProxyHandler = async (

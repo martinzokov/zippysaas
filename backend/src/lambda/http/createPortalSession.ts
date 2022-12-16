@@ -13,7 +13,7 @@ import { parseUserId } from "../../auth/utils";
 import { SubscriptionsRepository } from "../../storage/SubscriptionsRepository";
 const logger = createLogger("createPortalHandler");
 
-const stripe = require('stripe')('sk_test_51LTpa2JDqfS8yHgviefD8PKqcnyTXKwn2Bp5OTL2VmhnstVKeHcYDF10g9Q9lENlerlOjKp2JocqdDd1jEG5WTWO00opvTH1c1');
+const stripe = require('stripe')(process.env.STRIPE_API_KEY);
 const stripeConfigRepo = new StripeConfigRepository();
 const subscriptionRepo = new SubscriptionsRepository();
 
