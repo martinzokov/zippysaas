@@ -20,7 +20,7 @@ export class InvoiceEventsProcessor implements EventsProcessor{
                 await this.processPaymentSucceeded(event);
             break;
             case 'invoice.payment_failed':
-    
+                // TODO define what happens if payment doesn't succeed
             break;
         }
     }
