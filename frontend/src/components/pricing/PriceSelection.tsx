@@ -43,8 +43,8 @@ const PriceSelection = () => {
             perMonth={9.99}
             annual={99.9}
             isAnnualPrice={isAnnual}
-            annualPriceId="price_1M1yaoJDqfS8yHgvv3f8gdOK"
-            monthlyPriceId="price_1LTqXTJDqfS8yHgvelQopp3C"
+            annualPriceId="price_XXXXXXXXXXXXXXXXX"
+            monthlyPriceId="price_XXXXXXXXXXXXXXXXX"
           />
           <PriceCard
             planName="Pro"
@@ -52,8 +52,8 @@ const PriceSelection = () => {
             perMonth={19.99}
             annual={199}
             isAnnualPrice={isAnnual}
-            annualPriceId="price_1M1ybFJDqfS8yHgvcYiIUQFx"
-            monthlyPriceId="price_1LTpnqJDqfS8yHgvMBMOwZWX"
+            annualPriceId="price_XXXXXXXXXXXXXXXXXXX"
+            monthlyPriceId="price_XXXXXXXXXXXXXXXXXXXX"
           />
         </div>
       </div>
