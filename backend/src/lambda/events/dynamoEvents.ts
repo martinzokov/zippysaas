@@ -46,13 +46,6 @@ const newItem = async (record: any) => {
     }
 
     await whRepo.setWebhookStatus(newItem.sortKey.S, WebhookProcessingStatus.PROCESSED);
-    // const body = {
-    //     partitionKey: newItem.partitionKey.S,
-    //     sortKey: newItem.sortKey.S,
-    //     recipeName: newItem.recipeName.S,
-    //     description: newItem.description.S,
-    //     ingridients: newItem.ingridients.L,
-    //   };
   }
 
 };
@@ -80,9 +73,6 @@ async function newStripeWebhookEvent(eventBody: any) {
         case 'customer.subscription.updated':
           
         break;
-
-
-
         case 'customer.subscription.deleted':
           subscription = event.data.object;
           status = subscription.status;

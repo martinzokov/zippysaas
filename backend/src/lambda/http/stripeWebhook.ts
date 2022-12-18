@@ -13,6 +13,7 @@ import { StripeWebhookEvent } from "../../storage/StripeWebhookEvent";
 const logger = createLogger("getExample");
 
 const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const whRepo = new WebhooksRepository();
 
@@ -26,10 +27,10 @@ export const handler: APIGatewayProxyHandler = async (
   // If you are testing with the CLI, find the secret by running 'stripe listen'
   // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
   // at https://dashboard.stripe.com/webhooks
-  const endpointSecret = 'whsec_cN8JSgk5z6sZPG0CIZXljwXAkkFYGn2s';
+
   // Only verify the event if you have an endpoint secret defined.
   // Otherwise use the basic event deserialized with JSON.parse
-  if (endpointSecret) {
+  if (stripeWebhookSecret) {
     // Get the signature sent by Stripe
     console.log("stripeEvent.headers is: "+ JSON.stringify(stripeEvent.headers))
     const signature = stripeEvent.headers['Stripe-Signature'];
@@ -38,7 +39,7 @@ export const handler: APIGatewayProxyHandler = async (
       event = stripe.webhooks.constructEvent(
         stripeEvent.body,
         signature,
-        endpointSecret
+        stripeWebhookSecret
       );
     } catch (err) {
       console.log(`⚠️  Webhook signature verification failed.`, err.message);
@@ -54,7 +55,6 @@ export const handler: APIGatewayProxyHandler = async (
   if(recordsWithKey.length == 0){
     await whRepo.saveWebhook(new StripeWebhookEvent(eventId, stripeEvent.body));
   }
-  // Handle the event
   
   // Return a 200 response to acknowledge receipt of the event
   return{
