@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import "../styles/global.css";
-import Amplify, { Auth } from "aws-amplify";
+import { Auth, Amplify } from "aws-amplify";
 import type { AppProps } from "next/app";
 import { getApiHost } from "@/client/environmentConfig";
 
@@ -49,6 +49,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     Auth.currentSession().catch((err) => {
       router.push("/signin");
+      console.error(err);
     });
   }, []);
   return <Component {...pageProps} />;
