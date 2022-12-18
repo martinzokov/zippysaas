@@ -1,9 +1,9 @@
 import { Auth } from "aws-amplify";
 import axios from "axios";
-import { getHost } from "./environmentConfig";
+import { getApiHost } from "./environmentConfig";
 
 
-const HOSTED_URL = getHost();
+const HOSTED_URL = getApiHost();
 
 axios.interceptors.request.use(async function (config) {
     const token = await getToken()
