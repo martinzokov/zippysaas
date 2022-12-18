@@ -1,9 +1,12 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { AppConfig } from "@/utils/AppConfig";
+
+import logo from "../../public/assets/images/zippy-logo.png";
+import { Auth } from "aws-amplify";
 
 type IMainProps = {
   meta: ReactNode;
@@ -17,40 +20,61 @@ const userNavigation = [
   { name: "Settings", href: "/settings" },
   { name: "Sign out", href: "/signout" },
 ];
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+
+function isEmailLogin(attributes: CognitoUserAttribute[]): boolean {
+  return (
+    attributes.filter((attribute) => attribute.Name === "email").length > 0
+  );
 }
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-
 const Main = (props: IMainProps) => {
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    Auth.currentUserPoolUser()
+      .then((user) => {
+        Auth.userAttributes(user)
+          .then((attributes) => {
+            if (isEmailLogin(attributes)) {
+              let email =
+                attributes.filter((attribute) => attribute.Name === "email")[0]
+                  ?.Value ?? "";
+              setUserEmail(email);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="w-full px-1 text-gray-700 antialiased bg-gray-100">
       {props.meta}
-
-      <div className="mx-auto max-w-screen-md flex flex-col h-screen justify-between p-3">
+      <div className="mx-auto md:w-4/6 max-w-full flex flex-col h-screen justify-between p-3 ">
         <div className="border-b border-gray-300">
           <div className="pt-16 pb-8">
-            <div className="text-3xl font-bold text-gray-900">
+            <div className="text-3xl font-bold text-gray-900 flex flex-row items-center">
+              <div className="w-24">
+                <img src={logo.src} alt="logo" />
+              </div>
               {AppConfig.title}
             </div>
             <div className="text-xl">{AppConfig.description}</div>
           </div>
           <Disclosure as="nav" className="">
             <>
-              <div className="max-w-7xl mx-auto ">
+              <div className="mx-auto ">
                 <div className="flex items-center justify-between h-16">
                   <div className="flex items-center">
                     <div className="hidden md:block">
                       <div className="flex items-baseline space-x-4">
                         {navigation.map((item) => (
                           <Link key={item.name} href={item.href}>
-                            <a className="text-gray-900 hover:bg-gray-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <a className="text-gray-900 hover:bg-main hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                               {item.name}
                             </a>
                           </Link>
@@ -75,7 +99,7 @@ const Main = (props: IMainProps) => {
                                 <path
                                   fillRule="evenodd"
                                   d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                  clip-rule="evenodd"
+                                  clipRule="evenodd"
                                 ></path>
                               </svg>
                             </div>
@@ -107,7 +131,7 @@ const Main = (props: IMainProps) => {
                   </div>
                   <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
-                    <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                    <Disclosure.Button className="bg-main inline-flex items-center justify-center p-2 rounded-md text-main-dark hover:text-main hover:bg-main-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                       <span className="sr-only">Open main menu</span>
                       <MenuIcon className="block h-6 w-6" aria-hidden="true" />
                     </Disclosure.Button>
@@ -119,7 +143,7 @@ const Main = (props: IMainProps) => {
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                   {navigation.map((item) => (
                     <Link key={item.name} href={item.href}>
-                      <a className="block text-gray-900 hover:bg-gray-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                      <a className="block text-gray-900 hover:bg-main hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         {item.name}
                       </a>
                     </Link>
@@ -137,16 +161,13 @@ const Main = (props: IMainProps) => {
                         <path
                           fillRule="evenodd"
                           d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                          clip-rule="evenodd"
+                          clipRule="evenodd"
                         ></path>
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-gray-900">
-                        {user.name}
-                      </div>
                       <div className="text-sm font-medium leading-none text-gray-900">
-                        {user.email}
+                        {userEmail}
                       </div>
                     </div>
                   </div>
@@ -176,17 +197,7 @@ const Main = (props: IMainProps) => {
         <div className="content py-5 text-xl mb-auto">{props.children}</div>
 
         <div className="border-t border-gray-300 py-8 text-center text-sm">
-          © Copyright {new Date().getFullYear()} {AppConfig.title}. Powered with{" "}
-          <span role="img" aria-label="Love">
-            ♥
-          </span>{" "}
-          by <a href="https://creativedesignsguru.com">CreativeDesignsGuru</a>
-          {/*
-           * PLEASE READ THIS SECTION
-           * We'll really appreciate if you could have a link to our website
-           * The link doesn't need to appear on every pages, one link on one page is enough.
-           * Thank you for your support it'll mean a lot for us.
-           */}
+          © Copyright {new Date().getFullYear()} {AppConfig.title}.
         </div>
       </div>
     </div>

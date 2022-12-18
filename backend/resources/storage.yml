@@ -1,0 +1,61 @@
+Resources:
+  # Add a DynamoDB table
+  PaymentsDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: partitionKey
+          AttributeType: S
+        - AttributeName: sortKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: partitionKey
+          KeyType: HASH
+        - AttributeName: sortKey
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      TableName: ${self:provider.environment.PAYMENTS_TABLE}
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+      GlobalSecondaryIndexes:
+        - IndexName: ${self:provider.environment.INDEX_NAME}
+          KeySchema:
+            - AttributeName: sortKey
+              KeyType: HASH
+            - AttributeName: partitionKey
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL # What attributes will be copied to an index
+
+  # Creating an S3 bucket
+  # AttachmentsBucket:
+  #   Type: AWS::S3::Bucket
+  #   Properties:
+  #     BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+  #     CorsConfiguration:
+  #       CorsRules:
+  #         - AllowedOrigins:
+  #             - "*"
+  #           AllowedHeaders:
+  #             - "*"
+  #           AllowedMethods:
+  #             - GET
+  #             - PUT
+  #             - POST
+  #             - DELETE
+  #             - HEAD
+  #           MaxAge: 3000
+
+  # BucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     PolicyDocument:
+  #       Id: MyPolicy
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Sid: PublicReadForGetBucketObjects
+  #           Effect: Allow
+  #           Principal: "*"
+  #           Action: "s3:GetObject"
+  #           Resource: "arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*"
+  #     Bucket: !Ref AttachmentsBucket

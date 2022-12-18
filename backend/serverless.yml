@@ -1,4 +1,6 @@
-service: zippysaas-v2
+org: mzokov
+app: zippysaas
+service: zippysaas
 useDotenv: true
 
 plugins:
@@ -11,7 +13,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs16.x
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
@@ -20,7 +22,11 @@ provider:
     INDEX_NAME: INVERSE_KEY_IDX
     SIGNED_URL_EXPIRATION: 300
     #_X_AMZN_TRACE_ID: abcdf123151 # use for local runs only
-    # DYNAMO_TABLE: Test-${self:provider.stage}-${self:service}
+    PAYMENTS_TABLE: payments-${self:service}-${self:provider.stage}
+    STRIPE_API_KEY: ${ssm:/stripe_api_key}
+    STRIPE_WEBHOOK_SECRET: ${ssm:/stripe_webhook_secret}
+    GOOGLE_CLIENT_ID: ${ssm:/google_client_id}
+    GOOGLE_CLIENT_SECRET: ${ssm:/google_client_secret}
 
   #tracing:
   #  lambda: true
@@ -28,7 +34,7 @@ provider:
 
 custom:
   serverless-offline:
-    port: 3003
+    httpPort: 4000
 
   dynamodb:
     start:
@@ -42,17 +48,37 @@ custom:
     api:
       info:
         version: v1.0.0
-        title: Udagram API
-        description: Serverless application for managing your own cookbook
-    models:
-      - name: CreateRecipeRequest
-        contentType: application/json
-        schema: ${file(models/create-recipe-request.json)}
-      - name: UpdateRecipeRequest
-        contentType: application/json
-        schema: ${file(models/update-recipe-request.json)}
+        title: ZippySaaS
+        description: ZippySaaS helps you build SaaS fast
 
 functions:
+  billingPortalConfig:
+    handler: src/lambda/admin/billingPortalConfig.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+  featuresConfig:
+    handler: src/lambda/admin/productsSetup.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
   preSignUp:
     handler: src/auth/pre-signup.handler
     events:
@@ -61,32 +87,139 @@ functions:
           trigger: PreSignUp
           existing: true
 
-  GetRecipes:
-    handler: src/lambda/http/getRecipes.handler
+  postConfirmation:
+    handler: src/auth/post-confirmation.handler
+    events:
+      - cognitoUserPool:
+          pool: ${self:provider.stage}-user-pool
+          trigger: PostConfirmation
+          existing: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+  GetSubscriptionDetails:
+    handler: src/lambda/http/getSubscriptionDetails.handler
     events:
       - http:
           method: get
-          path: recipes
+          path: subscription-details
           cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
               Ref: ApiGatewayAuthorizer
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+  GetExample:
+    handler: src/lambda/http/getExample.handler
+    events:
+      - http:
+          method: get
+          path: example
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  CreateCheckoutSession:
+    handler: src/lambda/http/createCheckoutSession.handler
+    events:
+      - http:
+          method: post
+          path: create-checkout-session
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+  CreatePortalSession:
+    handler: src/lambda/http/createPortalSession.handler
+    events:
+      - http:
+          method: post
+          path: create-portal-session
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+
+  StripeWebhook:
+    handler: src/lambda/http/stripeWebhook.handler
+    events:
+      - http:
+          method: post
+          path: stripe-webhook
+          cors: true
     # Add permissions for storage access
-    # iamRoleStatements:
-    #   - Effect: Allow
-    #     Action:
-    #       - dynamodb:GetItem
-    #       - dynamodb:Query
-    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}
-    #   - Effect: Allow
-    #     Action:
-    #       - dynamodb:GetItem
-    #       - dynamodb:Query
-    #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE}/index/${self:provider.environment.INDEX_NAME}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
+  ProcessWebhook:
+    handler: src/lambda/events/dynamoEvents.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt PaymentsDynamoDBTable.StreamArn
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:Query
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PAYMENTS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
   - ${file(resources/api-gateway-authorizer.yml)}
   - ${file(resources/api-gateway.yml)}
+  - ${file(resources/storage.yml)}

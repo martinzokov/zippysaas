@@ -1,0 +1,29 @@
+
+{
+    "productsConfig":{
+        "prod_MCF1MtyUit7bwA": [
+            {
+                "featureCode": "can_read",
+                "featureDescription": "test"
+            },
+            {
+                "featureCode": "can_write",
+                "featureDescription": "test"
+            }
+        ],
+        "prod_MCEGxRUdXjT4xL": [
+            {
+                "featureCode": "can_read",
+                "featureDescription": "test"
+            },
+            {
+                "featureCode": "can_write",
+                "featureDescription": "test"
+            },
+            {
+                "featureCode": "can_run",
+                "featureDescription": "test"
+            }
+        ] 
+    }
+}

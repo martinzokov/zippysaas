@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import "../styles/global.css";
-import Amplify, { Auth, Hub } from "aws-amplify";
+import { Auth, Amplify } from "aws-amplify";
 import type { AppProps } from "next/app";
+import { getApiHost } from "@/client/environmentConfig";
 
-const HOSTED_URL =
-  "https://46ll6x3x9i.execute-api.eu-west-1.amazonaws.com/dev/";
+const HOSTED_URL = getApiHost();
+
+console.log("api host: " + HOSTED_URL);
 
 const config = {
   HOSTED_URL,
-  MODE: "DEVELOPMENT",
-  REGION: "eu-west-1",
+  REGION: process.env.NEXT_PUBLIC_AWS_REGION!,
+  AUTHENTICATION_TYPE: "AWS_IAM" as const,
+  // TODO Configure URLs
   REDIRECT_SIGN_IN: `http://localhost:3000/`,
   REDIRECT_SIGN_OUT: `http://localhost:3000/signout`,
-  AUTHENTICATION_TYPE: "AWS_IAM" as const,
 
-  /**
-   * Add the details from the Pulumi output here, after running 'pulumi up'
-   */
-  USER_POOL_CLIENT_ID: "21hd3lellvhntt8jafeisu86f4",
-  USER_POOL_ID: "eu-west-1_Ix2mFv0Vz",
-  IDENTITY_POOL_ID: "eu-west-1:39005e1d-d314-4474-9527-1cd973d0caae",
+  // TODO Configure Cognito IDs in .env files
+  USER_POOL_CLIENT_ID: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID!,
+  USER_POOL_ID: process.env.NEXT_PUBLIC_USER_POOL_ID!,
+  IDENTITY_POOL_ID: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID!,
 };
 
 const awsconfig = {
@@ -31,7 +31,7 @@ const awsconfig = {
     identityPoolId: config.IDENTITY_POOL_ID,
     userPoolWebClientId: config.USER_POOL_CLIENT_ID,
     oauth: {
-      domain: "dev-zippysaas-v2.auth.eu-west-1.amazoncognito.com",
+      domain: process.env.NEXT_PUBLIC_OAUTH_COGNITO_HOST!,
       redirectSignIn: config.REDIRECT_SIGN_IN,
       redirectSignOut: config.REDIRECT_SIGN_OUT,
       scope: ["email", "openid", "aws.cognito.signin.user.admin"],
@@ -49,6 +49,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     Auth.currentSession().catch((err) => {
       router.push("/signin");
+      console.error(err);
     });
   }, []);
   return <Component {...pageProps} />;

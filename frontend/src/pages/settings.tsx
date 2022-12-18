@@ -1,15 +1,22 @@
-import { Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { Auth } from "aws-amplify";
 import {
   ChangeEventHandler,
   FormEventHandler,
+  Fragment,
   useEffect,
   useState,
 } from "react";
 
 import { Meta } from "@/layouts/Meta";
 import { Main } from "@/templates/Main";
+import PriceSelection from "@/components/pricing/PriceSelection";
+import {
+  createPortalSession,
+  getSubscriptionDetails,
+} from "@/client/BackendClient";
+import { useIsAuthenticated } from "@/hooks/useIsAuthenticated";
 
 interface PasswordValidation {
   hasUpperAndLower: Boolean;
@@ -20,7 +27,26 @@ interface PasswordValidation {
 }
 
 const Settings = () => {
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [subscriptionPlan, setSubscriptionPlan] = useState(false);
+  const isAuthenticated = useIsAuthenticated();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      getSubscriptionDetails()
+        .then((response) => {
+          setHasActiveSubscription(response.data.isActive);
+          setSubscriptionPlan(response.data.subscriptionPlan);
+        })
+        .catch((response) => {
+          console.error(response);
+        });
+    }
+  }, [isAuthenticated]);
+
   let [settingsUpdatedOpen, setSettingsUpdatedOpen] = useState(false);
+  let [planSelectionOpen, setPlanSelectionOpen] = useState(false);
+
   let [shouldDisplayChangePassword, setShouldDisplayChangePassword] =
     useState(false);
 
@@ -144,6 +170,18 @@ const Settings = () => {
     setSettingsUpdatedOpen(false);
   }
 
+  const createPortalSessionSubmit = async (
+    e: React.MouseEventHandler<HTMLInputElement>
+  ) => {
+    await createPortalSession()
+      .then((response: any) => {
+        window.location.href = response.data.sessionUrl;
+      })
+      .catch((response) => {
+        console.error(response);
+      });
+  };
+
   return (
     <Main
       meta={
@@ -187,6 +225,87 @@ const Settings = () => {
           </div>
         </div>
       </Dialog>
+
+      <Transition appear show={planSelectionOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="z-10"
+          open={planSelectionOpen}
+          onClose={() => setPlanSelectionOpen(false)}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+          <div className="fixed inset-0 md:inset-40 overflow-y-auto">
+            <div className="flex items-center justify-center p-4 text-center">
+              <Dialog.Panel className="border-2 md:w-4/6 max-w-full transform overflow-hidden rounded-xl bg-white p-6 text-left align-middle transition-all">
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    onClick={() => setPlanSelectionOpen(false)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <PriceSelection />
+              </Dialog.Panel>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <div className="flex md:flex-row flex-col p-5 content-between">
+        <div className="w-full md:w-56">
+          <h3 className="text-lg font-medium leading-6 text-gray-900">
+            Manage subscription
+          </h3>
+        </div>
+        {hasActiveSubscription ? (
+          <div className="flex flex-col">
+            <div className="text-sm">Current Plan: {subscriptionPlan}</div>
+            <div className="w-56 mt-5">
+              <button
+                onClick={createPortalSessionSubmit}
+                type="button"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-main hover:bg-main-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Manage subscription
+              </button>
+            </div>{" "}
+          </div>
+        ) : (
+          <>
+            {" "}
+            <a
+              onClick={() => setPlanSelectionOpen(true)}
+              href="#"
+              className="text-white bg-main hover:main-light focus:ring-4 focus:main-light font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              Select plan
+            </a>
+          </>
+        )}
+      </div>
 
       <div className="flex md:flex-row flex-col p-5 content-between">
         <div className="w-full md:w-56">
@@ -300,23 +419,8 @@ function renderChangePasswordForm(
         <div className="w-56 mt-5">
           <button
             type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-main hover:bg-main-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-              <svg
-                className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </span>
             Change password
           </button>
         </div>
@@ -332,7 +436,7 @@ function isEmailLogin(attributes: CognitoUserAttribute[]): boolean {
 }
 
 function basicInputStyle(): string {
-  return "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm";
+  return "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-main focus:border-main focus:z-10 sm:text-sm";
 }
 
 interface PasswordValidationRuleParams {
